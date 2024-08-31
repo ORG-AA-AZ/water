@@ -31,7 +31,7 @@ jobs:
       - name: Verify PHP-CS-Fixer Installation
         run: php -r "echo shell_exec('composer global exec which php-cs-fixer');"
       - name: Run PHP-CS-Fixer
-        run: php $(composer global exec which php-cs-fixer) fix --config .php-cs-fixer.php
+        run: php C:\Users\runneradmin\AppData\Roaming\Composer\vendor\bin\php-cs-fixer fix --config .php-cs-fixer.php
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
