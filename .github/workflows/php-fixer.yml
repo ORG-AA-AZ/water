@@ -1,6 +1,9 @@
 name: Fix Styling Issues
 
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - main  # Ensure this matches your target branch
 
 permissions:
   contents: write
@@ -17,7 +20,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'  # Adjust the PHP version as needed
+          php-version: '8.1'
       - name: Install PHP-CS-Fixer
         run: composer global require friendsofphp/php-cs-fixer
       - name: Run PHP-CS-Fixer
