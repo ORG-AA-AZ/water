@@ -23,17 +23,15 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.1"
+          php-version: '8.1'
       - name: Install PHP-CS-Fixer
-        run: |
-          composer global require friendsofphp/php-cs-fixer
-          echo "Adding Composer global bin directory to PATH"
-          echo "PATH=%PATH%;%USERPROFILE%/.composer/vendor/bin" >> $env:PATH
+        run: composer global require friendsofphp/php-cs-fixer
+      - name: Add Composer global bin directory to PATH
+        run: echo "$env:PATH;C:\Users\runneradmin\AppData\Roaming\Composer\vendor\bin" | Out-File -Encoding ASCII -FilePath "$env:USERPROFILE\.profile"
       - name: Verify PHP-CS-Fixer Installation
-        run: |
-          where php-cs-fixer
+        run: php -r "echo shell_exec('composer global exec which php-cs-fixer');"
       - name: Run PHP-CS-Fixer
-        run: php php-cs-fixer fix --config .php-cs-fixer.php
+        run: php $(composer global exec which php-cs-fixer) fix --config .php-cs-fixer.php
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
