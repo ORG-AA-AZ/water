@@ -8,14 +8,20 @@ permissions:
 jobs:
   php-cs-fixer:
     name: PHP-CS-Fixer
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: PHP-CS-Fixer
-        uses: docker://oskarstark/php-cs-fixer-ga
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'  # Adjust the PHP version as needed
+      - name: Install PHP-CS-Fixer
+        run: composer global require friendsofphp/php-cs-fixer
+      - name: Run PHP-CS-Fixer
+        run: php $(composer global exec which php-cs-fixer) fix --config .php-cs-fixer.php
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:

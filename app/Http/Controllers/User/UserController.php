@@ -42,20 +42,20 @@ class UserController extends Controller
     public function login(LoginRequest $request)
     {
         try {
-            if (!Auth::attempt(['mobile' => $request->input('mobile'), 'password' => $request->input('password')])) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Mobile and password not in our record',
-                    'data' => []
-                ], 401);
-            }
-
             $user = User::where('mobile', $request->input('mobile'))->first();
 
             if (!$user) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'User is not exist',
+                    'data' => []
+                ], 401);
+            }
+
+            if (!Auth::attempt(['mobile' => $request->input('mobile'), 'password' => $request->input('password')])) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Invalid login',
                     'data' => []
                 ], 401);
             }
