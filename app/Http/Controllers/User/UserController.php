@@ -25,14 +25,14 @@ class UserController extends Controller
                 'data' => [
                     'id' => $user->id,
                     'name' => $user->name,
-                    'mobile'=> $user->mobile,
+                    'mobile' => $user->mobile,
                     'token' => $user->createToken('API TOKEN')->plainTextToken,
-                ]
+                ],
             ], 401);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 200);
         }
 
@@ -44,19 +44,19 @@ class UserController extends Controller
         try {
             $user = User::where('mobile', $request->input('mobile'))->first();
 
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'User is not exist',
-                    'data' => []
+                    'data' => [],
                 ], 401);
             }
 
-            if (!Auth::attempt(['mobile' => $request->input('mobile'), 'password' => $request->input('password')])) {
+            if (! Auth::attempt(['mobile' => $request->input('mobile'), 'password' => $request->input('password')])) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Invalid login',
-                    'data' => []
+                    'data' => [],
                 ], 401);
             }
 
@@ -70,14 +70,14 @@ class UserController extends Controller
                 'data' => [
                     'id' => $user->id,
                     'name' => $user->name,
-                    'mobile'=> $user->mobile,
+                    'mobile' => $user->mobile,
                     'token' => $user->createToken('API TOKEN')->plainTextToken,
-                ]
+                ],
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 401);
         }
     }
