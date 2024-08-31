@@ -4,7 +4,6 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -13,6 +12,16 @@ class UserController extends Controller
     public function register(RegisterRequest $request)
     {
         try {
+            $user = User::where('mobile', $request->input('mobile'))->first();
+
+            if ($user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'User is already exist',
+                    'data' => [],
+                ], 401);
+            }
+
             $user = User::create([
                 'name' => $request->input('name'),
                 'mobile' => $request->input('mobile'),
@@ -35,8 +44,6 @@ class UserController extends Controller
                 'message' => $e->getMessage(),
             ], 200);
         }
-
-        // return new UserResource($user);
     }
 
     public function login(LoginRequest $request)
@@ -47,7 +54,7 @@ class UserController extends Controller
             if (! $user) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'User is not exist',
+                    'message' => 'User does not exist',
                     'data' => [],
                 ], 401);
             }
@@ -59,10 +66,6 @@ class UserController extends Controller
                     'data' => [],
                 ], 401);
             }
-
-            $user->password = Hash::make($request->input('password'));
-
-            $user->save();
 
             return response()->json([
                 'status' => 'success',
@@ -79,6 +82,20 @@ class UserController extends Controller
                 'status' => 'error',
                 'message' => $e->getMessage(),
             ], 401);
+        }
+    }
+
+    public function logout()
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            $user->tokens()->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Logged out successfully.',
+            ], 200);
         }
     }
 }
