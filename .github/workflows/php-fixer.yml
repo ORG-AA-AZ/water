@@ -1,0 +1,23 @@
+name: Fix Styling Issues
+
+on: [pull_request]
+
+permissions:
+  contents: write
+
+jobs:
+  php-cs-fixer:
+    name: PHP-CS-Fixer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: PHP-CS-Fixer
+        uses: docker://oskarstark/php-cs-fixer-ga
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Fix styling issues (PHP-CS-Fixer)
+          token: ${{ secrets.MY_PERSONAL_TOKEN }}
