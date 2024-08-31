@@ -27,7 +27,10 @@ jobs:
       - name: Install PHP-CS-Fixer
         run: composer global require friendsofphp/php-cs-fixer
       - name: Add Composer global bin directory to PATH
-        run: echo "$env:PATH;C:\Users\runneradmin\AppData\Roaming\Composer\vendor\bin" | Out-File -Encoding ASCII -FilePath "$env:USERPROFILE\.profile"
+        run: |
+          echo "$env:PATH;C:\Users\runneradmin\AppData\Roaming\Composer\vendor\bin" | Out-File -Encoding ASCII -FilePath "$env:USERPROFILE\.profile"
+      - name: List files in the directory
+        run: dir
       - name: Verify PHP-CS-Fixer Installation
         run: php -r "echo shell_exec('composer global exec which php-cs-fixer');"
       - name: Run PHP-CS-Fixer
