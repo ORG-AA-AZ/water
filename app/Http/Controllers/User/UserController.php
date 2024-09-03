@@ -34,7 +34,7 @@ class UserController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Account registered success',
+                'message' => 'Account registered success. Verify your mobile',
                 'data' => [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -44,6 +44,7 @@ class UserController extends Controller
             ], 401);
 
             $this->sendSms($request->input('mobile'), $verification_code);
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -94,6 +95,13 @@ class UserController extends Controller
                 ], 401);
             }
 
+            if (is_null($user->mobile_verified_at)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Your mobile number is not verified',
+                ], 403);
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Login Success',
@@ -114,6 +122,7 @@ class UserController extends Controller
 
     public function logout()
     {
+        /** @var User $user */
         $user = Auth::user();
 
         if ($user) {
@@ -146,6 +155,22 @@ class UserController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Mobile number verified successfully',
+        ], 200);
+    }
+
+    public function setNewVerifyCodeAndSendToUser(NewVerifyCodeRequest $request)
+    {
+        $user = User::where('id', $request->input('user_id'))->first();
+
+        $user->update([
+            'mobile_verification_code' => $verification_code = rand(100000, 999999)
+        ]);
+
+        $this->sendSms($user->mobile, $verification_code);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'New verify number was sent.',
         ], 200);
     }
 }
