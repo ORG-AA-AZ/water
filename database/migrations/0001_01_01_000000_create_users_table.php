@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('mobile')->unique();
+            $table->string('mobile_verification_code')->nullable();
             $table->timestamp('mobile_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

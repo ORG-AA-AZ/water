@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Twilio\Rest\Client;
 
 class UserController extends Controller
 {
@@ -22,10 +23,13 @@ class UserController extends Controller
                 ], 401);
             }
 
+            $verification_code = rand(100000, 999999);
+
             $user = User::create([
                 'name' => $request->input('name'),
                 'mobile' => $request->input('mobile'),
                 'password' => Hash::make($request->password),
+                'mobile_verification_code' => $verification_code,
             ]);
 
             return response()->json([
@@ -38,6 +42,29 @@ class UserController extends Controller
                     'token' => $user->createToken('API TOKEN')->plainTextToken,
                 ],
             ], 401);
+
+            $this->sendSms($request->input('mobile'), $verification_code);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 200);
+        }
+    }
+
+    private function sendSms(string $mobile, string $code)
+    {
+        $sid = config('services.twilio.sid');
+        $token = config('services.twilio.token');
+        $from = config('services.twilio.from');
+
+        try {
+            $client = new Client($sid, $token);
+
+            $client->messages->create($mobile, [
+                'from' => $from,
+                'body' => "Your verification code is: {$code}",
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -97,5 +124,28 @@ class UserController extends Controller
                 'message' => 'Logged out successfully.',
             ], 200);
         }
+    }
+
+    public function verifyMobile(VerifyRequest $request)
+    {
+        $user = User::where('mobile', $request->input('mobile'))
+            ->where('mobile_verification_code', $request->input('code'))
+            ->first();
+
+        if (! $user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid verification code',
+            ], 422);
+        }
+
+        $user->mobile_verified_at = now();
+        $user->mobile_verification_code = null;
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Mobile number verified successfully',
+        ], 200);
     }
 }
