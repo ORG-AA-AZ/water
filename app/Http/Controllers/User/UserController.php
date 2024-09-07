@@ -4,7 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\SmsService;
+use App\Services\Sms\ServiceTwilioSms;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     protected $sms_service;
 
-    public function __construct(SmsService $sms_service)
+    public function __construct(ServiceTwilioSms $sms_service)
     {
         $this->sms_service = $sms_service;
     }
