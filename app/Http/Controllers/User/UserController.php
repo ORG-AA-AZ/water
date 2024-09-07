@@ -4,120 +4,82 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\SmsService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Twilio\Rest\Client;
 
 class UserController extends Controller
 {
-    public function register(RegisterRequest $request)
+    protected $sms_service;
+
+    public function __construct(SmsService $sms_service)
     {
-        try {
-            $user = User::where('mobile', $request->input('mobile'))->first();
-
-            if ($user) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'User is already exist',
-                    'data' => [],
-                ], 401);
-            }
-
-            $verification_code = rand(100000, 999999);
-
-            $user = User::create([
-                'name' => $request->input('name'),
-                'mobile' => $request->input('mobile'),
-                'password' => Hash::make($request->password),
-                'mobile_verification_code' => $verification_code,
-            ]);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Account registered success. Verify your mobile',
-                'data' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'mobile' => $user->mobile,
-                    'token' => $user->createToken('API TOKEN')->plainTextToken,
-                ],
-            ], 401);
-
-            $this->sendSms($request->input('mobile'), $verification_code);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 200);
-        }
+        $this->sms_service = $sms_service;
     }
 
-    private function sendSms(string $mobile, string $code)
+    public function register(RegisterRequest $request)
     {
-        $sid = config('services.twilio.sid');
-        $token = config('services.twilio.token');
-        $from = config('services.twilio.from');
+        $user = User::where('mobile', $request->input('mobile'))->first();
 
-        try {
-            $client = new Client($sid, $token);
-
-            $client->messages->create($mobile, [
-                'from' => $from,
-                'body' => "Your verification code is: {$code}",
-            ]);
-        } catch (\Exception $e) {
+        if ($user) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 200);
+                'message' => 'User already exists',
+            ], 401);
         }
+
+        $verification_code = rand(100000, 999999);
+
+        $user = User::create([
+            'name' => $request->input('name'),
+            'mobile' => $request->input('mobile'),
+            'password' => Hash::make($request->password),
+            'mobile_verification_code' => $verification_code,
+        ]);
+
+        // Send SMS verification code
+        $this->sms_service->sendVerificationCode($user->mobile, $verification_code);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Account registered successfully. Verify your mobile number',
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'mobile' => $user->mobile,
+                'token' => $user->createToken('API TOKEN')->plainTextToken,
+            ],
+        ], 201);
     }
 
     public function login(LoginRequest $request)
     {
-        try {
-            $user = User::where('mobile', $request->input('mobile'))->first();
+        $user = User::where('mobile', $request->input('mobile'))->first();
 
-            if (! $user) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'User does not exist',
-                    'data' => [],
-                ], 401);
-            }
-
-            if (! Auth::attempt(['mobile' => $request->input('mobile'), 'password' => $request->input('password')])) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Invalid login',
-                    'data' => [],
-                ], 401);
-            }
-
-            if (is_null($user->mobile_verified_at)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Your mobile number is not verified',
-                ], 403);
-            }
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Login Success',
-                'data' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'mobile' => $user->mobile,
-                    'token' => $user->createToken('API TOKEN')->plainTextToken,
-                ],
-            ], 200);
-        } catch (\Exception $e) {
+        if (! $user || ! Auth::attempt(['mobile' => $request->input('mobile'), 'password' => $request->input('password')])) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage(),
+                'message' => 'Invalid login credentials',
             ], 401);
         }
+
+        if (is_null($user->mobile_verified_at)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Your mobile number is not verified',
+            ], 403);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Login successful',
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'mobile' => $user->mobile,
+                'token' => $user->createToken('API TOKEN')->plainTextToken,
+            ],
+        ], 200);
     }
 
     public function logout()
@@ -133,6 +95,11 @@ class UserController extends Controller
                 'message' => 'Logged out successfully.',
             ], 200);
         }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'User not authenticated',
+        ], 401);
     }
 
     public function verifyMobile(VerifyRequest $request)
@@ -158,19 +125,26 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function setNewVerifyCodeAndSendToUser(NewVerifyCodeRequest $request)
+    public function setNewVerificationCode(NewVerifyCodeRequest $request)
     {
-        $user = User::where('id', $request->input('user_id'))->first();
+        $user = User::find($request->input('user_id'));
 
-        $user->update([
-            'mobile_verification_code' => $verification_code = rand(100000, 999999)
-        ]);
+        if (! $user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found',
+            ], 404);
+        }
 
-        $this->sendSms($user->mobile, $verification_code);
+        $verification_code = rand(100000, 999999);
+        $user->mobile_verification_code = $verification_code;
+        $user->save();
+
+        $this->sms_service->sendVerificationCode($user->mobile, $verification_code);
 
         return response()->json([
             'status' => 'success',
-            'message' => 'New verify number was sent.',
+            'message' => 'New verification code sent successfully.',
         ], 200);
     }
 }
