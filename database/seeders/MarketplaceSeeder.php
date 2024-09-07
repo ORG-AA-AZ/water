@@ -15,7 +15,7 @@ class MarketplaceSeeder extends Seeder
      */
     public function run(): void
     {
-        $user =  User::factory()->create();
+        $user = User::factory()->create();
 
         Marketplace::create([
             'name' => fake()->name(),

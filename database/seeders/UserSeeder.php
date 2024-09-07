@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
             'name' => 'Abood Akram',
             'mobile' => '0797193116',
             'password' => 'password123',
-            'mobile_verified_at' => now()
+            'mobile_verified_at' => now(),
         ]);
     }
 }
