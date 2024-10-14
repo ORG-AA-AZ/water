@@ -25,7 +25,8 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'mobile' => fake()->numberBetween(1000000000, 9999999999),
+            'mobile' => (string) fake()->numberBetween(1000000000, 9999999999),
+            'mobile_verification_code' => null,
             'mobile_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
@@ -37,7 +38,8 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn () => [
+            'mobile_verification_code' => rand(100000, 999999),
             'mobile_verified_at' => null,
         ]);
     }

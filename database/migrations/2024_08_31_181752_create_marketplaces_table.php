@@ -13,9 +13,10 @@ return new class extends Migration {
         Schema::create('marketplaces', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('national_id')->unique();
             $table->string('mobile')->unique();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamp('mobile_verified_at')->nullable();
+            $table->string('location');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

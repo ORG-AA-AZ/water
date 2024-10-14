@@ -12,6 +12,7 @@ class MarketplaceRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'mobile' => ['required', 'string', 'max:10', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'national_id' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
 }

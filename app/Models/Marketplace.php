@@ -14,9 +14,4 @@ class Marketplace extends Model
         'user_id',
         'password',
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 }

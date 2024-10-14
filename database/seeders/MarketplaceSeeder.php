@@ -15,15 +15,14 @@ class MarketplaceSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::factory()->create();
-
         Marketplace::create([
+            'national_id' => fake()->numberBetween(1000000000, 9999999999),
             'name' => fake()->name(),
-            'mobile' => $user->mobile,
+            'mobile' => fake()->numberBetween(1000000000, 9999999999),
             'mobile_verified_at' => now(),
-            'user_id' => $user->id,
             'password' => Hash::make('password123'),
             'remember_token' => Str::random(10),
+            'location' => 'located in : ' . Str::random(10),
         ]);
     }
 }

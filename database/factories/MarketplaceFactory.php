@@ -34,25 +34,12 @@ class MarketplaceFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'national_id' => fake()->numberBetween(1000000000, 9999999999),
             'mobile' => fake()->numberBetween(1000000000, 9999999999),
             'mobile_verified_at' => now(),
-            'user_id' => User::factory(),
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'location' => 'located in : ' . Str::random(10),
         ];
-    }
-
-    /**
-     * Indicate that the marketplace belongs to a specific user.
-     *
-     * @param User $user
-     * @return $this
-     */
-    public function forUser(User $user): self
-    {
-        return $this->state([
-            'user_id' => $user->id,  // Setting the specific user ID
-        ]);
     }
 
     public function unverified(): static
