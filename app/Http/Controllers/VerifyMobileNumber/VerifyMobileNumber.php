@@ -8,7 +8,8 @@ use App\Services\Sms\ServiceTwilioSms;
 class VerifyMobileNumber
 {
     public function __construct(private ServiceTwilioSms $sms_service)
-    {}
+    {
+    }
 
     public function verifyMobile(VerifyRequest $request, ModelsEnum $model)
     {

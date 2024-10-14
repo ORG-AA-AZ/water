@@ -2,8 +2,8 @@
 
 namespace App\Enums;
 
-use App\Models\User;
 use App\Models\Marketplace;
+use App\Models\User;
 
 enum ModelsEnum: string
 {
@@ -12,7 +12,7 @@ enum ModelsEnum: string
 
     public function getModel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::User => User::class,
             self::Marketplace => Marketplace::class,
         };

@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class EnsureMarketplaceOwner
 {
@@ -15,7 +14,7 @@ class EnsureMarketplaceOwner
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$request->marketplace()) {
+        if (! $request->marketplace()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 

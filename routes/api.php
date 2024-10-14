@@ -12,13 +12,11 @@ Route::post('/auth/verify-mobile', [UserController::class, 'verifyMobile']);
 Route::post('/auth/resend-verify-code', [UserController::class, 'setNewVerifyCodeAndSendToUser']);
 Route::post('/auth/login', [UserController::class, 'login']);
 
-
 // Public Routes For Marketplace
 Route::post('/auth/register', [MarketplaceController::class, 'store']);
 Route::post('/auth/verify-mobile', [MarketplaceController::class, 'verifyMobile']);
 Route::post('/auth/resend-verify-code', [MarketplaceController::class, 'setNewVerifyCodeAndSendToUser']);
 Route::post('/auth/login', [MarketplaceController::class, 'login']);
-
 
 // Protected Routes with 'auth:sanctum' middleware
 Route::middleware('auth:sanctum')->group(function () {

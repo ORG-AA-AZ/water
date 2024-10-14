@@ -42,15 +42,15 @@ class UserControllerTest extends TestCase
         ];
 
         $this->postJson('/api/auth/register', $data)
-        ->assertOk()
-        ->assertStatus(201)
-        ->assertJsonStructure([
-            'data' => [
-                'id',
-                'name',
-                'mobile',
-            ],
-        ]);
+            ->assertOk()
+            ->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'mobile',
+                ],
+            ]);
 
         $this->assertDatabaseHas('users', [
             'name' => $name,
@@ -74,16 +74,16 @@ class UserControllerTest extends TestCase
         ];
 
         $this->postJson('/api/auth/login', $data)
-        ->assertOk()
-        ->assertStatus(200)
-        ->assertJsonStructure([
-            'data' => [
-                'id',
-                'name',
-                'mobile',
-                'token',
-            ],
-        ]);
+            ->assertOk()
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'mobile',
+                    'token',
+                ],
+            ]);
     }
 
     public function testVerifyMobileNumber(): void
@@ -96,11 +96,11 @@ class UserControllerTest extends TestCase
         ];
 
         $this->postJson('/api/auth/verify-mobile', $data)
-        ->assertOk()
-        ->assertStatus(200)
-        ->assertJsonStructure([
-            'status' => 'success',
-            'message' => 'Mobile number verified successfully',
-        ]);
+            ->assertOk()
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'status' => 'success',
+                'message' => 'Mobile number verified successfully',
+            ]);
     }
 }

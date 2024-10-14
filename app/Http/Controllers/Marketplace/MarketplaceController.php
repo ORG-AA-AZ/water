@@ -17,8 +17,8 @@ class MarketplaceController extends Controller
 {
     public function __construct(
         private VerifyMobileNumber $verify_mobile_number,
-    )
-    {}
+    ) {
+    }
 
     public function index()
     {
