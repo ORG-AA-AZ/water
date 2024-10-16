@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->float('price');
             $table->integer('quantity');
             $table->integer('factory');
+            $table->timestamps();
             $table->unsignedBigInteger('marketplace_id');
 
             $table->foreign('marketplace_id')->references('id')->on('marketplaces')->onDelete('cascade');
