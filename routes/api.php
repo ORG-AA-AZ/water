@@ -23,9 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Routes available to authenticated users
     Route::get('/marketplaces', [MarketplaceController::class, 'index']);
 
-    // Mobile verification middleware
     Route::middleware([EnsureMobileIsVerified::class])->group(function () {
-        Route::delete('/auth/logout', [UserController::class, 'logout']);
+        Route::delete('/auth/user-logout', [UserController::class, 'logout']);
     });
 
     // Marketplace owner middleware

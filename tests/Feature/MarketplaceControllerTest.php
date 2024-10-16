@@ -56,6 +56,29 @@ class MarketplaceControllerTest extends TestCase
         $this->assertTrue(Hash::check($password, $marketplace->password));
     }
 
+    public function testFailStoreMarketplaceNoneConfirmedPassword(): void
+    {
+        $this->faker = Factory::create();
+
+        $data = [
+            'national_id' => Str::random(),
+            'name' => $this->faker->name(),
+            'mobile' => (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
+            'password' => Str::random(),
+            'password_confirmation' => Str::random(),
+            'location' => 'located in : ' . Str::random(5),
+        ];
+
+        $this->postJson('/api/auth/marketplace-register', $data)
+            ->assertStatus(422)
+            ->assertJson([
+                'message' => 'The password confirmation does not match.',
+                'errors' => [
+                    'password' => ['The password confirmation does not match.'],
+                ],
+            ]);
+    }
+
     public function testFailStoreExistMarketplaceNationalId(): void
     {
         $this->faker = Factory::create();

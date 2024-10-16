@@ -60,6 +60,49 @@ class UserControllerTest extends TestCase
         $this->assertTrue(Hash::check($password, $user->password));
     }
 
+    public function testFailRegisterUserWithExistMobile(): void
+    {
+        $this->faker = Factory::create();
+        $user = UserFactory::new()->verified()->createOne();
+
+        $data = [
+            'name' => $this->faker->name(),
+            'mobile' => $user->mobile,
+            'password' => $password = Str::random(),
+            'password_confirmation' => $password,
+        ];
+
+        $this->postJson('/api/auth/user-register', $data)
+            ->assertStatus(422)
+            ->assertJson([
+                'message' => 'The mobile number has already been taken.',
+                'errors' => [
+                    'mobile' => ['The mobile number has already been taken.'],
+                ],
+            ]);
+    }
+
+    public function testFailRegisterUserNoneConfirmedPassword(): void
+    {
+        $this->faker = Factory::create();
+
+        $data = [
+            'name' => $this->faker->name(),
+            'mobile' => (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
+            'password' => Str::random(),
+            'password_confirmation' => Str::random(),
+        ];
+
+        $this->postJson('/api/auth/user-register', $data)
+            ->assertStatus(422)
+            ->assertJson([
+                'message' => 'The password confirmation does not match.',
+                'errors' => [
+                    'password' => ['The password confirmation does not match.'],
+                ],
+            ]);
+    }
+
     public function testLoginUser(): void
     {
         $user = UserFactory::new()->verified()->createOne();
@@ -82,6 +125,40 @@ class UserControllerTest extends TestCase
             ]);
     }
 
+    public function testInvalidLoginUserIfUserNotExistOrIncorrectPassword(): void
+    {
+        $user = UserFactory::new()->verified()->createOne();
+
+        $data = [
+            'mobile' => $user->mobile,
+            'password' => Str::random(8),
+        ];
+
+        $this->postJson('/api/auth/user-login', $data)
+            ->assertStatus(401)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Invalid login credentials',
+            ]);
+    }
+
+    public function testInvalidLoginUserIfMobileNotVerified(): void
+    {
+        $user = UserFactory::new()->createOne();
+
+        $data = [
+            'mobile' => $user->mobile,
+            'password' => 'password',
+        ];
+
+        $this->postJson('/api/auth/user-login', $data)
+            ->assertStatus(403)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Your mobile number is not verified',
+            ]);
+    }
+
     public function testVerifyMobileNumber(): void
     {
         $user = UserFactory::new()->createOne();
@@ -97,6 +174,47 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 'status' => 'success',
                 'message' => 'Mobile number verified successfully',
+            ]);
+    }
+
+    public function testLogoutSuccessfully(): void
+    {
+        $user = UserFactory::new()->verified()->createOne();
+        $user->createToken('API TOKEN')->plainTextToken;
+
+        $this->actingAs($user)->deleteJson('/api/auth/user-logout')
+            ->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'Logged out successfully.',
+            ]);
+
+        $this->assertCount(0, $user->tokens);
+    }
+
+    public function testLogoutUnauthenticatedUser(): void
+    {
+        $this->deleteJson('/api/auth/user-logout')
+            ->assertStatus(401)
+            ->assertJson([
+                'message' => 'Unauthenticated.',
+            ]);
+    }
+
+    public function testLogoutAfterTokenDeletion(): void
+    {
+        $user = UserFactory::new()->verified()->createOne();
+        $user->createToken('API TOKEN')->plainTextToken;
+        $this->assertCount(1, $user->tokens);
+
+        $user->tokens()->delete();
+        $user->refresh();
+        $this->assertCount(0, $user->tokens);
+
+        $this->deleteJson('/api/auth/user-logout')
+            ->assertStatus(401)
+            ->assertJson([
+                'message' => 'Unauthenticated.',
             ]);
     }
 }

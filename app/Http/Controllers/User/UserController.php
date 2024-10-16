@@ -87,8 +87,7 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'status' => 'error',
-            'message' => 'User not authenticated',
+            'message' => 'Unauthenticated',
         ], 401);
     }
 
