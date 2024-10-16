@@ -9,7 +9,6 @@ use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
 use App\Models\Marketplace;
-use App\Resources\MarketplaceResource;
 use Illuminate\Support\Facades\Auth;
 
 class MarketplaceController extends Controller

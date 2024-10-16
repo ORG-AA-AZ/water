@@ -9,16 +9,14 @@ use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
 use App\Models\User;
-use App\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     public function __construct(
         private VerifyMobileNumber $verify_mobile_number,
         private Registration $registration_service,
-    ){
+    ) {
     }
 
     public function register(RegisterRequest $request)
