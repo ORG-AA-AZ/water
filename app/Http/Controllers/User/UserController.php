@@ -17,7 +17,7 @@ class UserController extends Controller
     public function __construct(
         private VerifyMobileNumber $verify_mobile_number,
         protected ServiceTwilioSms $sms_service,
-    ){
+    ) {
     }
 
     public function register(RegisterRequest $request)
