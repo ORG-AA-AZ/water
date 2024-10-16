@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Registration;
 
 use App\Enums\ModelsEnum;
 use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
-use App\Models\User;
 use App\Services\Sms\ServiceTwilioSms;
 use Illuminate\Support\Facades\Hash;
 

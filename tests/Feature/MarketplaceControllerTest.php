@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Http\Controllers\Marketplace\MarketplaceController;
 use App\Http\Controllers\Marketplace\MarketplaceRequest;
 use App\Models\Marketplace;
-use App\Models\User;
 use App\Resources\MarketplaceResource;
 use Database\Factories\MarketplaceFactory;
 use Faker\Factory;
@@ -72,13 +71,13 @@ class MarketplaceControllerTest extends TestCase
         ];
 
         $this->postJson('/api/auth/marketplace-register', $data)
-        ->assertStatus(422)
-        ->assertJson([
-            'message' => 'The national ID has already been taken.',
-            'errors' => [
-                'national_id' => ['The national ID has already been taken.'],
-            ],
-        ]);
+            ->assertStatus(422)
+            ->assertJson([
+                'message' => 'The national ID has already been taken.',
+                'errors' => [
+                    'national_id' => ['The national ID has already been taken.'],
+                ],
+            ]);
     }
 
     public function testFailStoreExistMarketplaceMobile(): void
@@ -96,12 +95,12 @@ class MarketplaceControllerTest extends TestCase
         ];
 
         $this->postJson('/api/auth/marketplace-register', $data)
-        ->assertStatus(422)
-        ->assertJson([
-            'message' => 'The mobile number has already been taken.',
-            'errors' => [
-                'mobile' => ['The mobile number has already been taken.'],
-            ],
-        ]);
+            ->assertStatus(422)
+            ->assertJson([
+                'message' => 'The mobile number has already been taken.',
+                'errors' => [
+                    'mobile' => ['The mobile number has already been taken.'],
+                ],
+            ]);
     }
 }
