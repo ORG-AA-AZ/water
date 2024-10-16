@@ -4,18 +4,18 @@ namespace App\Http\Controllers\Marketplace;
 
 use App\Enums\ModelsEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Registration\Registration;
 use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
 use App\Models\Marketplace;
 use App\Resources\MarketplaceResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class MarketplaceController extends Controller
 {
     public function __construct(
+        private Registration $registration_service,
         private VerifyMobileNumber $verify_mobile_number,
     ) {
     }
@@ -27,15 +27,27 @@ class MarketplaceController extends Controller
 
     public function store(MarketplaceRequest $request)
     {
-        $marketplace = Marketplace::create([
+        $data = [
             'national_id' => $request->input('national_id'),
             'name' => $request->input('name'),
             'mobile' => $request->input('mobile'),
-            'password' => Hash::make($request->password),
-            'location' => 'located in : ' . Str::random(5),
-        ]);
+            'location' => $request->input('location'),
+            'password' => $request->input('password'),
+        ];
 
-        return new MarketplaceResource($marketplace);
+        try {
+            $this->registration_service->register(ModelsEnum::Marketplace, $data);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Account registered successfully. Verify your mobile number',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 401);
+        }
     }
 
     public function login(MarketplaceRequest $request)

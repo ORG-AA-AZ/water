@@ -4,11 +4,12 @@ namespace App\Http\Controllers\User;
 
 use App\Enums\ModelsEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Registration\Registration;
 use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
 use App\Models\User;
-use App\Services\Sms\ServiceTwilioSms;
+use App\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,43 +17,31 @@ class UserController extends Controller
 {
     public function __construct(
         private VerifyMobileNumber $verify_mobile_number,
-        protected ServiceTwilioSms $sms_service,
+        private Registration $registration_service,
     ){
     }
 
     public function register(RegisterRequest $request)
     {
-        $user = User::where('mobile', $request->input('mobile'))->first();
-
-        if ($user) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'User already exists',
-            ], 401);
-        }
-
-        $verification_code = rand(100000, 999999);
-
-        $user = User::create([
+        $data = [
             'name' => $request->input('name'),
             'mobile' => $request->input('mobile'),
-            'password' => Hash::make($request->password),
-            'mobile_verification_code' => $verification_code,
-        ]);
+            'password' => $request->input('password'),
+        ];
 
-        // Send SMS verification code
-        $this->sms_service->sendVerificationCode($user->mobile, $verification_code);
+        try {
+            $this->registration_service->register(ModelsEnum::User, $data);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Account registered successfully. Verify your mobile number',
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'mobile' => $user->mobile,
-                'token' => $user->createToken('API TOKEN')->plainTextToken,
-            ],
-        ], 201);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Account registered successfully. Verify your mobile number',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 401);
+        }
     }
 
     public function login(LoginRequest $request)

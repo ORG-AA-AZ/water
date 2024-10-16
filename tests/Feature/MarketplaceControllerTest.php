@@ -4,9 +4,10 @@ namespace Tests\Feature;
 
 use App\Http\Controllers\Marketplace\MarketplaceController;
 use App\Http\Controllers\Marketplace\MarketplaceRequest;
+use App\Models\Marketplace;
 use App\Models\User;
 use App\Resources\MarketplaceResource;
-use App\Resources\UserResource;
+use Database\Factories\MarketplaceFactory;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,57 +19,94 @@ use Tests\TestCase;
 #[CoversClass(MarketplaceController::class)]
 #[CoversClass(MarketplaceRequest::class)]
 #[CoversClass(MarketplaceResource::class)]
-#[CoversClass(UserResource::class)]
 
 class MarketplaceControllerTest extends TestCase
 {
     use RefreshDatabase;
     private Generator $faker;
 
-    /**
-     * Test the store method.
-     *
-     * @return void
-     */
-    public function testStoreMarketplace()
+    public function testStoreMarketplace(): void
     {
         $this->faker = Factory::create();
 
-        // Define the data for the request
         $data = [
+            'national_id' => $national_id = Str::random(8),
             'name' => $name = $this->faker->name(),
             'mobile' => $mobile = (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
             'password' => $password = Str::random(),
             'password_confirmation' => $password,
+            'location' => $location = 'located in : ' . Str::random(5),
         ];
 
-        // Make the POST request to the store method
-        $resposne = $this->postJson(
-            '/api/marketplace',
-            $data
-        );
-
-        $resposne->assertStatus(201);
-
-        $resposne->assertJsonStructure([
+        $this->postJson('/api/auth/marketplace-register', $data)
+        ->assertStatus(201)
+        ->assertJsonStructure([
             'data' => [
                 'id',
-                'user' => [
-                    'id',
-                    'name',
-                    'mobile',
-                ],
+                'national_id',
+                'name',
+                'mobile',
+                'location',
             ],
         ]);
 
-        // Assert that the marketplace and user are created in the database
         $this->assertDatabaseHas('marketplaces', [
+            'national_id' => $national_id,
             'name' => $name,
             'mobile' => $mobile,
+            'location' => $location,
         ]);
 
-        $user = User::where('mobile', $mobile)->first();
+        $marketplace = Marketplace::where('mobile', $mobile)->first();
 
-        $this->assertTrue(Hash::check($password, $user->password));
+        $this->assertTrue(Hash::check($password, $marketplace->password));
+    }
+
+    public function testFailStoreExistMarketplaceNationalId(): void
+    {
+        $this->faker = Factory::create();
+        $marketplace = MarketplaceFactory::new()->verified()->createOne();
+
+        $data = [
+            'national_id' => (string) $marketplace->national_id,
+            'name' => $this->faker->name(),
+            'mobile' => (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
+            'password' => $password = Str::random(),
+            'password_confirmation' => $password,
+            'location' => 'located in : ' . Str::random(5),
+        ];
+
+        $this->postJson('/api/auth/marketplace-register', $data)
+        ->assertStatus(422)
+        ->assertJson([
+            'message' => 'The national ID has already been taken.',
+            'errors' => [
+                'national_id' => ['The national ID has already been taken.'],
+            ],
+        ]);
+    }
+
+    public function testFailStoreExistMarketplaceMobile(): void
+    {
+        $this->faker = Factory::create();
+        $marketplace = MarketplaceFactory::new()->verified()->createOne();
+
+        $data = [
+            'national_id' => (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
+            'name' => $this->faker->name(),
+            'mobile' => (string) $marketplace->mobile,
+            'password' => $password = Str::random(),
+            'password_confirmation' => $password,
+            'location' => 'located in : ' . Str::random(5),
+        ];
+
+        $this->postJson('/api/auth/marketplace-register', $data)
+        ->assertStatus(422)
+        ->assertJson([
+            'message' => 'The mobile number has already been taken.',
+            'errors' => [
+                'mobile' => ['The mobile number has already been taken.'],
+            ],
+        ]);
     }
 }

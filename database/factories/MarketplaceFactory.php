@@ -35,16 +35,18 @@ class MarketplaceFactory extends Factory
             'name' => fake()->name(),
             'national_id' => fake()->numberBetween(1000000000, 9999999999),
             'mobile' => fake()->numberBetween(1000000000, 9999999999),
-            'mobile_verified_at' => now(),
+            'mobile_verification_code' => Str::random(6),
+            'mobile_verified_at' => null,
             'password' => static::$password ??= Hash::make('password'),
             'location' => 'located in : ' . Str::random(10),
         ];
     }
 
-    public function unverified(): static
+    public function verified(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'mobile_verified_at' => null,
+        return $this->state(fn () => [
+            'mobile_verification_code' => null,
+            'mobile_verified_at' => now(),
         ]);
     }
 }
