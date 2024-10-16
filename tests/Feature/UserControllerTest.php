@@ -43,12 +43,9 @@ class UserControllerTest extends TestCase
 
         $this->postJson('/api/auth/user-register', $data)
             ->assertStatus(201)
-            ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'name',
-                    'mobile',
-                ],
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'Account registered successfully. Verify your mobile number',
             ]);
 
         $this->assertDatabaseHas('users', [

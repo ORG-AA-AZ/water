@@ -40,15 +40,10 @@ class MarketplaceControllerTest extends TestCase
 
         $this->postJson('/api/auth/marketplace-register', $data)
         ->assertStatus(201)
-        ->assertJsonStructure([
-            'data' => [
-                'id',
-                'national_id',
-                'name',
-                'mobile',
-                'location',
-            ],
-        ]);
+        ->assertJson([
+            'status' => 'success',
+            'message' => 'Account registered successfully. Verify your mobile number',
+        ]);;
 
         $this->assertDatabaseHas('marketplaces', [
             'national_id' => $national_id,
