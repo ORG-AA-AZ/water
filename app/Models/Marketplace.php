@@ -4,19 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Marketplace extends Model
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
     protected $fillable = [
         'name',
         'mobile',
-        'user_id',
+        'national_id',
         'password',
+        'location',
     ];
 
-    public function user()
+    public function products()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Product::class);
     }
 }
