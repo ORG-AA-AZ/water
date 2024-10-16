@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-
     protected $fillable = [
         'name',
         'description',
@@ -16,7 +15,7 @@ class Product extends Model
         'price',
         'quantity',
         'factory',
-        'marketplace_id'
+        'marketplace_id',
     ];
 
     public function marketplace()
