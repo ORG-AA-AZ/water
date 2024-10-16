@@ -3,10 +3,10 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\User\LoginRequest;
-use App\Http\Controllers\User\NewVerifyCodeRequest;
 use App\Http\Controllers\User\RegisterRequest;
 use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\User\VerifyRequest;
+use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
+use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
 use App\Models\User;
 use App\Resources\UserResource;
 use Database\Factories\UserFactory;
@@ -20,10 +20,10 @@ use Tests\TestCase;
 
 #[CoversClass(UserController::class)]
 #[CoversClass(LoginRequest::class)]
-#[CoversClass(NewVerifyCodeRequest::class)]
 #[CoversClass(RegisterRequest::class)]
-#[CoversClass(VerifyRequest::class)]
 #[CoversClass(UserResource::class)]
+#[CoversClass(VerifyRequest::class)]
+#[CoversClass(NewVerifyCodeRequest::class)]
 
 class UserControllerTest extends TestCase
 {
@@ -41,8 +41,7 @@ class UserControllerTest extends TestCase
             'password_confirmation' => $password,
         ];
 
-        $this->postJson('/api/auth/register', $data)
-            ->assertOk()
+        $this->postJson('/api/auth/user-register', $data)
             ->assertStatus(201)
             ->assertJsonStructure([
                 'data' => [
@@ -66,14 +65,14 @@ class UserControllerTest extends TestCase
 
     public function testLoginUser(): void
     {
-        $user = UserFactory::new()->createOne();
+        $user = UserFactory::new()->verified()->createOne();
 
         $data = [
             'mobile' => $user->mobile,
             'password' => 'password',
         ];
 
-        $this->postJson('/api/auth/login', $data)
+        $this->postJson('/api/auth/user-login', $data)
             ->assertOk()
             ->assertStatus(200)
             ->assertJsonStructure([
@@ -88,17 +87,17 @@ class UserControllerTest extends TestCase
 
     public function testVerifyMobileNumber(): void
     {
-        $user = UserFactory::new()->unverified()->createOne();
+        $user = UserFactory::new()->createOne();
 
         $data = [
             'mobile' => $user->mobile,
             'code' => $user->mobile_verification_code,
         ];
 
-        $this->postJson('/api/auth/verify-mobile', $data)
+        $this->postJson('/api/auth/user-verify-mobile', $data)
             ->assertOk()
             ->assertStatus(200)
-            ->assertJsonStructure([
+            ->assertJson([
                 'status' => 'success',
                 'message' => 'Mobile number verified successfully',
             ]);

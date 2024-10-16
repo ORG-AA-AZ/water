@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enums\ModelsEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
+use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
+use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
 use App\Models\User;
 use App\Services\Sms\ServiceTwilioSms;
 use Illuminate\Support\Facades\Auth;
@@ -10,11 +14,10 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    protected $sms_service;
-
-    public function __construct(ServiceTwilioSms $sms_service)
-    {
-        $this->sms_service = $sms_service;
+    public function __construct(
+        private VerifyMobileNumber $verify_mobile_number,
+        protected ServiceTwilioSms $sms_service,
+    ){
     }
 
     public function register(RegisterRequest $request)
@@ -104,47 +107,11 @@ class UserController extends Controller
 
     public function verifyMobile(VerifyRequest $request)
     {
-        $user = User::where('mobile', $request->input('mobile'))
-            ->where('mobile_verification_code', $request->input('code'))
-            ->first();
-
-        if (! $user) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid verification code',
-            ], 422);
-        }
-
-        $user->mobile_verified_at = now();
-        $user->mobile_verification_code = null;
-        $user->save();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Mobile number verified successfully',
-        ], 200);
+        return $this->verify_mobile_number->verifyMobile($request, ModelsEnum::User);
     }
 
-    public function setNewVerificationCode(NewVerifyCodeRequest $request)
+    public function resendVerificationCode(NewVerifyCodeRequest $request)
     {
-        $user = User::find($request->input('user_id'));
-
-        if (! $user) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'User not found',
-            ], 404);
-        }
-
-        $verification_code = rand(100000, 999999);
-        $user->mobile_verification_code = $verification_code;
-        $user->save();
-
-        $this->sms_service->sendVerificationCode($user->mobile, $verification_code);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'New verification code sent successfully.',
-        ], 200);
+        return $this->verify_mobile_number->setNewVerificationCode($request, ModelsEnum::User);
     }
 }

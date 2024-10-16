@@ -7,16 +7,16 @@ use App\Http\Middleware\EnsureMobileIsVerified;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes For User
-Route::post('/auth/register', [UserController::class, 'register']);
-Route::post('/auth/verify-mobile', [UserController::class, 'verifyMobile']);
-Route::post('/auth/resend-verify-code', [UserController::class, 'setNewVerifyCodeAndSendToUser']);
-Route::post('/auth/login', [UserController::class, 'login']);
+Route::post('/auth/user-register', [UserController::class, 'register']);
+Route::post('/auth/user-verify-mobile', [UserController::class, 'verifyMobile']);
+Route::post('/auth/user-resend-verify-code', [UserController::class, 'setNewVerifyCodeAndSendToUser']);
+Route::post('/auth/user-login', [UserController::class, 'login']);
 
 // Public Routes For Marketplace
-Route::post('/auth/register', [MarketplaceController::class, 'store']);
-Route::post('/auth/verify-mobile', [MarketplaceController::class, 'verifyMobile']);
-Route::post('/auth/resend-verify-code', [MarketplaceController::class, 'setNewVerifyCodeAndSendToUser']);
-Route::post('/auth/login', [MarketplaceController::class, 'login']);
+Route::post('/auth/marketplace-register', [MarketplaceController::class, 'store']);
+Route::post('/auth/marketplace-verify-mobile', [MarketplaceController::class, 'verifyMobile']);
+Route::post('/auth/marketplace-resend-verify-code', [MarketplaceController::class, 'setNewVerifyCodeAndSendToUser']);
+Route::post('/auth/marketplace-login', [MarketplaceController::class, 'login']);
 
 // Protected Routes with 'auth:sanctum' middleware
 Route::middleware('auth:sanctum')->group(function () {
