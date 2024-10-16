@@ -11,7 +11,12 @@ class Marketplace extends Model
     protected $fillable = [
         'name',
         'mobile',
-        'user_id',
+        'national_id',
         'password',
     ];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }
