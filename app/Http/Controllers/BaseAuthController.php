@@ -11,7 +11,8 @@ abstract class BaseAuthController extends Controller
 {
     public function __construct(
         private LoginAndRegisterService $service
-    ) {}
+    ) {
+    }
 
     public function register(ModelsEnum $model, $request, array $modelSpecificFields = []): JsonResponse
     {

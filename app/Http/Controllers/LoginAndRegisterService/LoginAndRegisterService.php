@@ -15,6 +15,7 @@ class LoginAndRegisterService
         protected ServiceTwilioSms $sms_service,
     ) {
     }
+
     public function register(ModelsEnum $model, array $data): void
     {
         $retrieved_data = $this->prepareData($data);
