@@ -25,7 +25,6 @@ class VerifyMobileNumber
         $entity->mobile_verified_at = now();
         $entity->update(['mobile_verification_code' => null]);
 
-
         return response()->json([
             'status' => 'success',
             'message' => 'Mobile number verified successfully',
