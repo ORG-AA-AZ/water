@@ -3,92 +3,39 @@
 namespace App\Http\Controllers\User;
 
 use App\Enums\ModelsEnum;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\Registration\Registration;
+use App\Http\Controllers\BaseAuthController;
+use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
 use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 
-class UserController extends Controller
+class UserController extends BaseAuthController
 {
     public function __construct(
         private VerifyMobileNumber $verify_mobile_number,
-        private Registration $registration_service,
+        LoginAndRegisterService $service
     ) {
+        parent::__construct($service);
     }
 
-    public function register(RegisterRequest $request)
+    public function registerUser(RegisterRequest $request)
     {
-        $data = [
-            'name' => $request->input('name'),
-            'mobile' => $request->input('mobile'),
-            'password' => $request->input('password'),
-        ];
-
-        try {
-            $this->registration_service->register(ModelsEnum::User, $data);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Account registered successfully. Verify your mobile number',
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 401);
-        }
+        return parent::register(ModelsEnum::User, $request);
     }
 
-    public function login(LoginRequest $request)
+    public function loginUser(LoginRequest $request)
     {
-        $user = User::where('mobile', $request->input('mobile'))->first();
-
-        if (! $user || ! Auth::attempt(['mobile' => $request->input('mobile'), 'password' => $request->input('password')])) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid login credentials',
-            ], 401);
-        }
-
-        if (is_null($user->mobile_verified_at)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Your mobile number is not verified',
-            ], 403);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Login successful',
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'mobile' => $user->mobile,
-                'token' => $user->createToken('API TOKEN')->plainTextToken,
-            ],
-        ], 200);
+        return parent::login(ModelsEnum::User, $request);
     }
 
-    public function logout()
+    public function resetUserPassword(ResetPasswordRequest $request)
     {
-        /** @var User $user */
-        $user = Auth::user();
+        return parent::resetPassword(ModelsEnum::User, $request);
+    }
 
-        if ($user) {
-            $user->tokens()->delete();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Logged out successfully.',
-            ], 200);
-        }
-
-        return response()->json([
-            'message' => 'Unauthenticated',
-        ], 401);
+    public function logoutUser()
+    {
+        return parent::logout();
     }
 
     public function verifyMobile(VerifyRequest $request)

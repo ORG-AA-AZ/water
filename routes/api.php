@@ -7,16 +7,18 @@ use App\Http\Middleware\EnsureMobileIsVerified;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes For User
-Route::post('/auth/user-register', [UserController::class, 'register']);
+Route::post('/auth/user-register', [UserController::class, 'registerUser']);
+Route::post('/auth/user-reset-password', [UserController::class, 'resetUserPassword']);
 Route::post('/auth/user-verify-mobile', [UserController::class, 'verifyMobile']);
 Route::post('/auth/user-resend-verify-code', [UserController::class, 'setNewVerifyCodeAndSendToUser']);
-Route::post('/auth/user-login', [UserController::class, 'login']);
+Route::post('/auth/user-login', [UserController::class, 'loginUser']);
 
 // Public Routes For Marketplace
-Route::post('/auth/marketplace-register', [MarketplaceController::class, 'store']);
+Route::post('/auth/marketplace-register', [MarketplaceController::class, 'registerMarketplace']);
+Route::post('/auth/marketplace-reset-password', [MarketplaceController::class, 'resetMarketplacePassword']);
 Route::post('/auth/marketplace-verify-mobile', [MarketplaceController::class, 'verifyMobile']);
 Route::post('/auth/marketplace-resend-verify-code', [MarketplaceController::class, 'setNewVerifyCodeAndSendToUser']);
-Route::post('/auth/marketplace-login', [MarketplaceController::class, 'login']);
+Route::post('/auth/marketplace-login', [MarketplaceController::class, 'loginMarketplace']);
 
 // Protected Routes with 'auth:sanctum' middleware
 Route::middleware('auth:sanctum')->group(function () {
@@ -24,7 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/marketplaces', [MarketplaceController::class, 'index']);
 
     Route::middleware([EnsureMobileIsVerified::class])->group(function () {
-        Route::delete('/auth/user-logout', [UserController::class, 'logout']);
+        Route::delete('/auth/user-logout', [UserController::class, 'logoutUser']);
+        Route::delete('/auth/marketplace-logout', [MarketplaceController::class, 'logoutMarketplace']);
     });
 
     // Marketplace owner middleware

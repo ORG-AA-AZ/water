@@ -3,86 +3,44 @@
 namespace App\Http\Controllers\Marketplace;
 
 use App\Enums\ModelsEnum;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\Registration\Registration;
+use App\Http\Controllers\BaseAuthController;
+use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
 use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
-use App\Models\Marketplace;
-use Illuminate\Support\Facades\Auth;
 
-class MarketplaceController extends Controller
+class MarketplaceController extends BaseAuthController
 {
     public function __construct(
-        private Registration $registration_service,
         private VerifyMobileNumber $verify_mobile_number,
+        LoginAndRegisterService $service
     ) {
+        parent::__construct($service);
     }
 
-    public function index()
-    {
-        return Marketplace::all();
-    }
-
-    public function store(MarketplaceRequest $request)
+    public function registerMarketplace(MarketplaceRequest $request)
     {
         $data = [
             'national_id' => $request->input('national_id'),
-            'name' => $request->input('name'),
-            'mobile' => $request->input('mobile'),
             'location' => $request->input('location'),
-            'password' => $request->input('password'),
         ];
 
-        try {
-            $this->registration_service->register(ModelsEnum::Marketplace, $data);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Account registered successfully. Verify your mobile number',
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 401);
-        }
+        return parent::register(ModelsEnum::Marketplace, $request, $data);
     }
 
-    public function login(MarketplaceRequest $request)
+    public function loginMarketplace(MarketplaceRequest $request)
     {
-        $marketplace = Marketplace::where('mobile', $request->input('mobile'))->first();
-
-        if (! $marketplace || ! Auth::attempt(['mobile' => $request->input('mobile'), 'password' => $request->input('password')])) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid login credentials',
-            ], 401);
-        }
-
-        if (is_null($marketplace->mobile_verified_at)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Your mobile number is not verified',
-            ], 403);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Login successful',
-            'data' => [
-                'id' => $marketplace->id,
-                'name' => $marketplace->name,
-                'mobile' => $marketplace->mobile,
-                'token' => $marketplace->createToken('API TOKEN')->plainTextToken,
-            ],
-        ], 200);
+        return parent::login(ModelsEnum::Marketplace, $request);
     }
 
-    public function addProduct()
+    public function resetMarketplacePassword(MarketplaceRequest $request)
     {
-        $user = Auth::user();
-        dd($user);
+        return parent::resetPassword(ModelsEnum::Marketplace, $request);
+    }
+
+    public function logoutMarketplace()
+    {
+        parent::logout();
     }
 
     public function verifyMobile(VerifyRequest $request)

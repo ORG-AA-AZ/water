@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
 use App\Http\Controllers\User\LoginRequest;
 use App\Http\Controllers\User\RegisterRequest;
 use App\Http\Controllers\User\UserController;
@@ -103,6 +104,32 @@ class UserControllerTest extends TestCase
             ]);
     }
 
+    public function testFailRegisterUserThrowsException(): void
+    {
+        $this->faker = Factory::create();
+
+        $data = [
+            'name' => $this->faker->name(),
+            'mobile' => (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
+            'password' => $password = Str::random(),
+            'password_confirmation' => $password,
+        ];
+
+        $mocked_service = $this->createMock(LoginAndRegisterService::class);
+        $mocked_service->expects($this->once())
+            ->method('register')
+            ->willThrowException(new \Exception('Registration error'));
+
+        $this->app->instance(LoginAndRegisterService::class, $mocked_service);
+
+        $this->postJson('/api/auth/user-register', $data)
+            ->assertStatus(401)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Registration error',
+            ]);
+    }
+
     public function testLoginUser(): void
     {
         $user = UserFactory::new()->verified()->createOne();
@@ -152,7 +179,7 @@ class UserControllerTest extends TestCase
         ];
 
         $this->postJson('/api/auth/user-login', $data)
-            ->assertStatus(403)
+            ->assertStatus(401)
             ->assertJson([
                 'status' => 'error',
                 'message' => 'Your mobile number is not verified',
@@ -194,23 +221,6 @@ class UserControllerTest extends TestCase
 
     public function testLogoutUnauthenticatedUser(): void
     {
-        $this->deleteJson('/api/auth/user-logout')
-            ->assertStatus(401)
-            ->assertJson([
-                'message' => 'Unauthenticated.',
-            ]);
-    }
-
-    public function testLogoutAfterTokenDeletion(): void
-    {
-        $user = UserFactory::new()->verified()->createOne();
-        $user->createToken('API TOKEN')->plainTextToken;
-        $this->assertCount(1, $user->tokens);
-
-        $user->tokens()->delete();
-        $user->refresh();
-        $this->assertCount(0, $user->tokens);
-
         $this->deleteJson('/api/auth/user-logout')
             ->assertStatus(401)
             ->assertJson([

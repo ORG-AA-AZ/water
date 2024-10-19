@@ -126,4 +126,31 @@ class MarketplaceControllerTest extends TestCase
                 ],
             ]);
     }
+
+    public function testLogoutSuccessfully(): void
+    {
+        $marketplace = MarketplaceFactory::new()->verified()->createOne();
+        $token = $marketplace->createToken('API TOKEN')->plainTextToken;
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->deleteJson('/api/auth/marketplace-logout')
+            ->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'Logged out successfully.',
+            ]);
+
+        $this->assertCount(0, $marketplace->tokens);
+        $this->assertCount(0, $marketplace->tokens);
+    }
+
+    public function testLogoutUnauthenticatedUser(): void
+    {
+        $this->deleteJson('/api/auth/user-logout')
+            ->assertStatus(401)
+            ->assertJson([
+                'message' => 'Unauthenticated.',
+            ]);
+    }
 }
