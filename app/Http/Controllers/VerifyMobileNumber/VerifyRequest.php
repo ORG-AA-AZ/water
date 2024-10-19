@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\VerifyMobileNumber;
 
 use Illuminate\Foundation\Http\FormRequest;
 

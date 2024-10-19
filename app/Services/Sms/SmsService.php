@@ -1,16 +1,23 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Sms;
 
 use Twilio\Rest\Client;
 
-class SmsService
+class SmsService implements ServiceTwilioSms
 {
     protected $twilioClient;
 
-    public function __construct(Client $client)
+    public function __construct()
     {
-        $this->twilioClient = $client;
+        $sid = config('services.twilio.sid');
+        $token = config('services.twilio.token');
+
+        if (empty($sid) || empty($token)) {
+            throw new \InvalidArgumentException('Twilio credentials are missing.');
+        }
+
+        $this->twilioClient = new Client($sid, $token);
     }
 
     public function sendVerificationCode(string $mobile, string $code)

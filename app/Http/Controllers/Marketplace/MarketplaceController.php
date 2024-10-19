@@ -2,29 +2,54 @@
 
 namespace App\Http\Controllers\Marketplace;
 
-use App\Http\Controllers\Controller;
-use App\Models\Marketplace;
-use App\Models\User;
-use App\Resources\MarketplaceResource;
-use Illuminate\Support\Facades\Hash;
+use App\Enums\ModelsEnum;
+use App\Http\Controllers\BaseAuthController;
+use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
+use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
+use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
+use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
 
-class MarketplaceController extends Controller
+class MarketplaceController extends BaseAuthController
 {
-    public function store(MarketplaceRequest $request)
+    public function __construct(
+        private VerifyMobileNumber $verify_mobile_number,
+        LoginAndRegisterService $service
+    ) {
+        parent::__construct($service);
+    }
+
+    public function registerMarketplace(MarketplaceRequest $request)
     {
-        $user = User::create([
-            'name' => $request->input('name'),
-            'mobile' => $request->input('mobile'),
-            'password' => Hash::make($request->password),
-        ]);
+        $data = [
+            'national_id' => $request->input('national_id'),
+            'location' => $request->input('location'),
+        ];
 
-        $marketplace = Marketplace::create([
-            'name' => $request->input('name'),
-            'mobile' => $request->input('mobile'),
-            'user_id' => $user->id,
-            'password' => Hash::make($request->password),
-        ]);
+        return parent::register(ModelsEnum::Marketplace, $request, $data);
+    }
 
-        return new MarketplaceResource($marketplace);
+    public function loginMarketplace(MarketplaceRequest $request)
+    {
+        return parent::login(ModelsEnum::Marketplace, $request);
+    }
+
+    public function resetMarketplacePassword(MarketplaceRequest $request)
+    {
+        return parent::resetPassword(ModelsEnum::Marketplace, $request);
+    }
+
+    public function logoutMarketplace()
+    {
+        return parent::logout();
+    }
+
+    public function verifyMobile(VerifyRequest $request)
+    {
+        return $this->verify_mobile_number->verifyMobile($request, ModelsEnum::Marketplace);
+    }
+
+    public function resendVerificationCode(NewVerifyCodeRequest $request)
+    {
+        return $this->verify_mobile_number->setNewVerificationCode($request, ModelsEnum::Marketplace);
     }
 }

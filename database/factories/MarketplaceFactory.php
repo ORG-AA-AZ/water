@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Marketplace;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -34,31 +33,20 @@ class MarketplaceFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'national_id' => fake()->numberBetween(1000000000, 9999999999),
             'mobile' => fake()->numberBetween(1000000000, 9999999999),
-            'mobile_verified_at' => now(),
-            'user_id' => User::factory(),
+            'mobile_verification_code' => Str::random(6),
+            'mobile_verified_at' => null,
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'location' => 'located in : ' . Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the marketplace belongs to a specific user.
-     *
-     * @param User $user
-     * @return $this
-     */
-    public function forUser(User $user): self
+    public function verified(): static
     {
-        return $this->state([
-            'user_id' => $user->id,  // Setting the specific user ID
-        ]);
-    }
-
-    public function unverified(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'mobile_verified_at' => null,
+        return $this->state(fn () => [
+            'mobile_verification_code' => null,
+            'mobile_verified_at' => now(),
         ]);
     }
 }

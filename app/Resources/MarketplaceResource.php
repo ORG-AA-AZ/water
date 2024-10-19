@@ -12,7 +12,10 @@ class MarketplaceResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => new UserResource($this->user),
+            'national_id' => $this->national_id,
+            'name' => $this->name,
+            'mobile' => $this->mobile,
+            'location' => $this->location,
         ];
     }
 }
