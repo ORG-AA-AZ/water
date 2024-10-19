@@ -58,8 +58,7 @@ class LoginAndRegisterService
     {
         $entity = $model->value::where('mobile', $data['mobile'])->first();
 
-        if(!$entity)
-        {
+        if (! $entity) {
             throw new \Exception('Your mobile number is not registered');
         }
 
