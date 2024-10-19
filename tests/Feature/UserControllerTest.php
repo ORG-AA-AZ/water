@@ -3,11 +3,11 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
-use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\User\RegisterRequest;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use App\Resources\UserResource;
