@@ -82,6 +82,7 @@ abstract class BaseAuthController extends Controller
 
     public function logout(): JsonResponse
     {
+        /** @var Tokenable $entity */
         $entity = Auth::user();
 
         $entity->tokens()->delete();

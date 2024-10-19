@@ -40,7 +40,7 @@ class MarketplaceController extends BaseAuthController
 
     public function logoutMarketplace()
     {
-        parent::logout();
+        return parent::logout();
     }
 
     public function verifyMobile(VerifyRequest $request)
