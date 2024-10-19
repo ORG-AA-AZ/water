@@ -1,3 +1,5 @@
+-   Forget password for marketplace
+
 -   Complete the testing for user
 
 -   Work on testing for marketplace

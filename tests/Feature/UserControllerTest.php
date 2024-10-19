@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
-use App\Http\Controllers\User\LoginRequest;
 use App\Http\Controllers\User\RegisterRequest;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
+use App\Http\Requests\ForgetPasswordRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use App\Resources\UserResource;
 use Database\Factories\UserFactory;
@@ -21,6 +23,8 @@ use Tests\TestCase;
 
 #[CoversClass(UserController::class)]
 #[CoversClass(LoginRequest::class)]
+#[CoversClass(ForgetPasswordRequest::class)]
+#[CoversClass(ResetPasswordRequest::class)]
 #[CoversClass(RegisterRequest::class)]
 #[CoversClass(UserResource::class)]
 #[CoversClass(VerifyRequest::class)]
@@ -152,6 +156,28 @@ class UserControllerTest extends TestCase
             ]);
     }
 
+    public function testLoginUserWithResetPassword(): void
+    {
+        $user = UserFactory::new()->verified()->setResetPassword()->createOne();
+
+        $data = [
+            'mobile' => $user->mobile,
+            'password' => 'reset_password',
+        ];
+
+        $this->postJson('/api/auth/user-login', $data)
+            ->assertOk()
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'mobile',
+                    'token',
+                ],
+            ]);
+    }
+
     public function testInvalidLoginUserIfUserNotExistOrIncorrectPassword(): void
     {
         $user = UserFactory::new()->verified()->createOne();
@@ -201,6 +227,23 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 'status' => 'success',
                 'message' => 'Mobile number verified successfully',
+            ]);
+    }
+
+    public function testResendVerifyCodeToMobileNumber(): void
+    {
+        $user = UserFactory::new()->createOne();
+
+        $data = [
+            'mobile' => $user->mobile,
+        ];
+
+        $this->postJson('/api/auth/user-resend-verify-code', $data)
+            ->assertOk()
+            ->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'New verification code sent successfully.',
             ]);
     }
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Marketplace;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class MarketplaceRequest extends FormRequest
+class MarketplaceRegisterRequest extends FormRequest
 {
     public function rules(): array
     {

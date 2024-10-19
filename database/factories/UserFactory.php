@@ -29,18 +29,26 @@ class UserFactory extends Factory
             'mobile_verification_code' => Str::random(6),
             'mobile_verified_at' => null,
             'password' => static::$password ??= Hash::make('password'),
+            'reset_password' => null,
             'remember_token' => Str::random(10),
         ];
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Indicate that the model's mobile address should be unverified.
      */
     public function verified(): static
     {
         return $this->state(fn () => [
             'mobile_verification_code' => null,
             'mobile_verified_at' => now(),
+        ]);
+    }
+
+    public function setResetPassword(): static
+    {
+        return $this->state(fn () => [
+            'reset_password' => Hash::make('reset_password'),
         ]);
     }
 }

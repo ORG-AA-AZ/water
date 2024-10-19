@@ -8,6 +8,8 @@ use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
 use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ResetPasswordRequest;
 
 class MarketplaceController extends BaseAuthController
 {
@@ -18,7 +20,7 @@ class MarketplaceController extends BaseAuthController
         parent::__construct($service);
     }
 
-    public function registerMarketplace(MarketplaceRequest $request)
+    public function registerMarketplace(MarketplaceRegisterRequest $request)
     {
         $data = [
             'national_id' => $request->input('national_id'),
@@ -28,12 +30,12 @@ class MarketplaceController extends BaseAuthController
         return parent::register(ModelsEnum::Marketplace, $request, $data);
     }
 
-    public function loginMarketplace(MarketplaceRequest $request)
+    public function loginMarketplace(LoginRequest $request)
     {
         return parent::login(ModelsEnum::Marketplace, $request);
     }
 
-    public function resetMarketplacePassword(MarketplaceRequest $request)
+    public function resetMarketplacePassword(ResetPasswordRequest $request)
     {
         return parent::resetPassword(ModelsEnum::Marketplace, $request);
     }

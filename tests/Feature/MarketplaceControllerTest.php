@@ -3,7 +3,8 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\Marketplace\MarketplaceController;
-use App\Http\Controllers\Marketplace\MarketplaceRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Models\Marketplace;
 use App\Resources\MarketplaceResource;
 use Database\Factories\MarketplaceFactory;
@@ -16,7 +17,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 
 #[CoversClass(MarketplaceController::class)]
-#[CoversClass(MarketplaceRequest::class)]
+#[CoversClass(LoginRequest::class)]
+#[CoversClass(ResetPasswordRequest::class)]
 #[CoversClass(MarketplaceResource::class)]
 
 class MarketplaceControllerTest extends TestCase

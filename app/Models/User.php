@@ -31,6 +31,7 @@ class User extends Authenticatable
     protected $hidden = [
         'mobile_verification_code',
         'password',
+        'reset_password',
         'remember_token',
     ];
 
@@ -44,6 +45,7 @@ class User extends Authenticatable
         return [
             'mobile_verified_at' => 'datetime',
             'password' => 'hashed',
+            'reset_password' => 'hashed',
         ];
     }
 }

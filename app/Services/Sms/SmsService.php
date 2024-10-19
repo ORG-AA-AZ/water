@@ -33,4 +33,18 @@ class SmsService implements ServiceTwilioSms
             throw new \RuntimeException('Failed to send SMS: ' . $e->getMessage());
         }
     }
+
+    public function sendNewPassword(string $mobile, string $new_password)
+    {
+        $from = config('services.twilio.from');
+
+        try {
+            $this->twilioClient->messages->create($mobile, [
+                'from' => $from,
+                'body' => "You try to login using forget password. Use this password to login if you tried that : {$new_password}. If it not you, stay login using your password.",
+            ]);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Failed to send SMS: ' . $e->getMessage());
+        }
+    }
 }

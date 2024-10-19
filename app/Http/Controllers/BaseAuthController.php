@@ -80,6 +80,25 @@ abstract class BaseAuthController extends Controller
         }
     }
 
+    public function forgetPassword(ModelsEnum $model, $request): JsonResponse
+    {
+        $data = $request->input('mobile');
+
+        try {
+            $this->service->resetPassword($model, $data);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login using new password that sent to mobile.',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 401);
+        }
+    }
+
     public function logout(): JsonResponse
     {
         /** @var Tokenable $entity */
