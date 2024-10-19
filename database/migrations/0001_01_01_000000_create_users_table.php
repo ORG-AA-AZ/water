@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->string('mobile_verification_code')->nullable();
             $table->timestamp('mobile_verified_at')->nullable();
             $table->string('password');
+            $table->string('reset_password')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

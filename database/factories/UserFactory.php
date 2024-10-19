@@ -29,6 +29,7 @@ class UserFactory extends Factory
             'mobile_verification_code' => Str::random(6),
             'mobile_verified_at' => null,
             'password' => static::$password ??= Hash::make('password'),
+            'reset_password' => null,
             'remember_token' => Str::random(10),
         ];
     }

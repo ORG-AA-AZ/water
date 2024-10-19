@@ -5,9 +5,12 @@ namespace App\Http\Controllers\User;
 use App\Enums\ModelsEnum;
 use App\Http\Controllers\BaseAuthController;
 use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
+use App\Http\Requests\ForgetPasswordRequest;
 
 class UserController extends BaseAuthController
 {
@@ -31,6 +34,11 @@ class UserController extends BaseAuthController
     public function resetUserPassword(ResetPasswordRequest $request)
     {
         return parent::resetPassword(ModelsEnum::User, $request);
+    }
+
+    public function forgetUserPassword(ForgetPasswordRequest $request)
+    {
+        return parent::forgetPassword(ModelsEnum::User, $request);
     }
 
     public function logoutUser()

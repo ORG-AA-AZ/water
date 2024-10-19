@@ -3,11 +3,12 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
-use App\Http\Controllers\User\LoginRequest;
+use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\User\RegisterRequest;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use App\Resources\UserResource;
 use Database\Factories\UserFactory;
@@ -21,6 +22,7 @@ use Tests\TestCase;
 
 #[CoversClass(UserController::class)]
 #[CoversClass(LoginRequest::class)]
+#[CoversClass(ResetPasswordRequest::class)]
 #[CoversClass(RegisterRequest::class)]
 #[CoversClass(UserResource::class)]
 #[CoversClass(VerifyRequest::class)]

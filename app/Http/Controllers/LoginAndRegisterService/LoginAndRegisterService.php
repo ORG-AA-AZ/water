@@ -7,6 +7,7 @@ use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
 use App\Services\Sms\ServiceTwilioSms;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class LoginAndRegisterService
 {
@@ -30,12 +31,19 @@ class LoginAndRegisterService
     {
         $entity = $model->value::where('mobile', $data['mobile'])->first();
 
-        if (! $entity || ! Auth::attempt(['mobile' => $data['mobile'], 'password' => $data['password']])) {
-            throw new \Exception('Invalid login credentials');
+        if (! $entity) {
+            throw new \Exception('Mobile number is not registered');
         }
 
         if (is_null($entity->mobile_verified_at)) {
             throw new \Exception('Your mobile number is not verified');
+        }
+
+        $login_using_password = Auth::attempt(['mobile' => $data['mobile'], 'password' => $data['password']]);
+        $login_using_reset_password = Hash::check($data['password'], $entity->reset_password);
+
+        if (! $login_using_password && ! $login_using_reset_password) {
+            throw new \Exception('Invalid login credentials');
         }
 
         return $entity;
@@ -44,6 +52,20 @@ class LoginAndRegisterService
     public function resetPassword(ModelsEnum $model, array $data)
     {
         $model->value::where('mobile', $data['mobile'])->first()->update(['password' => $data['password']]);
+    }
+
+    public function forgetPassword(ModelsEnum $model, array $data)
+    {
+        $entity = $model->value::where('mobile', $data['mobile'])->first();
+
+        if(!$entity)
+        {
+            throw new \Exception('Your mobile number is not registered');
+        }
+
+        $entity->update(['reset_password' => $reset_password = Str::random(10)]);
+
+        $this->sms_service->sendNewPassword($entity->mobile, Hash::make($reset_password));
     }
 
     private function prepareData(array $data): array

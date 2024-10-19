@@ -8,4 +8,9 @@ class FakeSmsService implements ServiceTwilioSms
     {
         return response()->json([], 201);
     }
+
+    public function sendNewPassword(string $mobile, string $new_password)
+    {
+        return response()->json([], 201);
+    }
 }
