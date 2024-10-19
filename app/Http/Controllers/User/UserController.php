@@ -48,11 +48,11 @@ class UserController extends BaseAuthController
 
     public function verifyMobile(VerifyRequest $request)
     {
-        return $this->verify_mobile_number->verifyMobile($request, ModelsEnum::User);
+        return $this->verify_mobile_number->verifyMobile(ModelsEnum::User, $request);
     }
 
     public function resendVerificationCode(NewVerifyCodeRequest $request)
     {
-        return $this->verify_mobile_number->setNewVerificationCode($request, ModelsEnum::User);
+        return $this->verify_mobile_number->setNewVerificationCode(ModelsEnum::User, $request);
     }
 }

@@ -9,7 +9,7 @@ class NewVerifyCodeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'string'],
+            'mobile' => ['required', 'string'],
         ];
     }
 }

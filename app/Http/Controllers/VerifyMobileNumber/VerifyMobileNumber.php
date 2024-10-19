@@ -11,9 +11,9 @@ class VerifyMobileNumber
     {
     }
 
-    public function verifyMobile(VerifyRequest $request, ModelsEnum $model)
+    public function verifyMobile(ModelsEnum $model, VerifyRequest $request)
     {
-        $entity = $this->getEntityByMobileAndCode($model, $request->input('mobile'), $request->input('code'));
+        $entity = $model->value::where('mobile', $request->input('mobile'))->where('mobile_verification_code', $request->input('code'))->first();
 
         if (! $entity) {
             return response()->json([
@@ -23,8 +23,8 @@ class VerifyMobileNumber
         }
 
         $entity->mobile_verified_at = now();
-        $entity->mobile_verification_code = null;
-        $entity->save();
+        $entity->update(['mobile_verification_code' => null]);
+
 
         return response()->json([
             'status' => 'success',
@@ -32,9 +32,9 @@ class VerifyMobileNumber
         ], 200);
     }
 
-    public function setNewVerificationCode(NewVerifyCodeRequest $request, ModelsEnum $model)
+    public function setNewVerificationCode(ModelsEnum $model, NewVerifyCodeRequest $request)
     {
-        $entity = $this->getEntityById($model, $request->input('user_id'));
+        $entity = $model->value::where('mobile', $request->input('mobile'))->first();
 
         if (! $entity) {
             return response()->json([
@@ -44,8 +44,7 @@ class VerifyMobileNumber
         }
 
         $verification_code = rand(100000, 999999);
-        $entity->mobile_verification_code = $verification_code;
-        $entity->save();
+        $entity->update(['mobile_verification_code' => $verification_code]);
 
         $this->sms_service->sendVerificationCode($entity->mobile, $verification_code);
 
@@ -53,21 +52,5 @@ class VerifyMobileNumber
             'status' => 'success',
             'message' => 'New verification code sent successfully.',
         ], 200);
-    }
-
-    private function getEntityByMobileAndCode(ModelsEnum $model, $mobile, $code)
-    {
-        $model_class = $model->getModel();
-
-        return $model_class::where('mobile', $mobile)
-            ->where('mobile_verification_code', $code)
-            ->first();
-    }
-
-    private function getEntityById(ModelsEnum $model, $id)
-    {
-        $model_class = $model->getModel();
-
-        return $model_class::find($id);
     }
 }

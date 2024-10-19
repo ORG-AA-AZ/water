@@ -11,7 +11,7 @@ Route::post('/auth/user-register', [UserController::class, 'registerUser']);
 Route::post('/auth/user-reset-password', [UserController::class, 'resetUserPassword']);
 Route::post('/auth/user-forget-password', [UserController::class, 'forgetUserPassword']);
 Route::post('/auth/user-verify-mobile', [UserController::class, 'verifyMobile']);
-Route::post('/auth/user-resend-verify-code', [UserController::class, 'setNewVerifyCodeAndSendToUser']);
+Route::post('/auth/user-resend-verify-code', [UserController::class, 'resendVerificationCode']);
 Route::post('/auth/user-login', [UserController::class, 'loginUser']);
 
 // Public Routes For Marketplace

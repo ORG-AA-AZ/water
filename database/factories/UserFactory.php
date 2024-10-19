@@ -35,13 +35,20 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Indicate that the model's mobile address should be unverified.
      */
     public function verified(): static
     {
         return $this->state(fn () => [
             'mobile_verification_code' => null,
             'mobile_verified_at' => now(),
+        ]);
+    }
+
+    public function setResetPassword(): static
+    {
+        return $this->state(fn () => [
+            'reset_password' => Hash::make('reset_password'),
         ]);
     }
 }
