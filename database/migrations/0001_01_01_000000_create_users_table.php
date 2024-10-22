@@ -16,6 +16,8 @@ return new class extends Migration {
             $table->string('mobile')->unique();
             $table->string('mobile_verification_code')->nullable();
             $table->timestamp('mobile_verified_at')->nullable();
+            $table->decimal('latitude', 10, 8);
+            $table->decimal('longitude', 11, 8);
             $table->string('password');
             $table->string('reset_password')->nullable();
             $table->rememberToken();

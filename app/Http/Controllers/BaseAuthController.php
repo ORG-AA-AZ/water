@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ModelsEnum;
-use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
+use App\Http\Controllers\Services\LoginAndRegisterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 

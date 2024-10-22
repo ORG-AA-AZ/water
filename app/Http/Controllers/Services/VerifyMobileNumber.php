@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\VerifyMobileNumber;
+namespace App\Http\Controllers\Services;
 
 use App\Enums\ModelsEnum;
 use App\Http\Requests\NewVerifyCodeRequest;

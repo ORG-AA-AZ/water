@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Marketplace;
 
 use App\Enums\ModelsEnum;
 use App\Http\Controllers\BaseAuthController;
-use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
-use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
+use App\Http\Controllers\Services\LoginAndRegisterService;
+use App\Http\Controllers\Services\Location;
+use App\Http\Controllers\Services\VerifyMobileNumber;
+use App\Http\Requests\ChangeLocationRequest;
 use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\NewVerifyCodeRequest;
@@ -15,6 +17,7 @@ use App\Http\Requests\VerifyRequest;
 class MarketplaceController extends BaseAuthController
 {
     public function __construct(
+        private Location $location,
         private VerifyMobileNumber $verify_mobile_number,
         LoginAndRegisterService $service
     ) {
@@ -60,5 +63,10 @@ class MarketplaceController extends BaseAuthController
     public function resendVerificationCode(NewVerifyCodeRequest $request)
     {
         return $this->verify_mobile_number->setNewVerificationCode(ModelsEnum::Marketplace, $request);
+    }
+
+    public function changeLocation(ChangeLocationRequest $request): void
+    {
+        $this->location->changeLocation(ModelsEnum::Marketplace, $request);
     }
 }

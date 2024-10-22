@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\LoginAndRegisterService;
+namespace App\Http\Controllers\Services;
 
 use App\Enums\ModelsEnum;
-use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
 use App\Services\Sms\ServiceTwilioSms;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;

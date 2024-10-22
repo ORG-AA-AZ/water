@@ -31,6 +31,8 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'reset_password' => null,
             'remember_token' => Str::random(10),
+            'latitude' => fake()->latitude(),
+            'longitude' => fake()->longitude(),
         ];
     }
 
@@ -49,6 +51,14 @@ class UserFactory extends Factory
     {
         return $this->state(fn () => [
             'reset_password' => Hash::make('reset_password'),
+        ]);
+    }
+
+    public function forLocation(float $latitude, float $longitude): static
+    {
+        return $this->state(fn () => [
+            'latitude' => $latitude,
+            'longitude' => $longitude,
         ]);
     }
 }
