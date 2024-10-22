@@ -5,9 +5,9 @@ namespace App\Http\Controllers\User;
 use App\Enums\ModelsEnum;
 use App\Http\Controllers\BaseAuthController;
 use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
-use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
+use App\Http\Requests\NewVerifyCodeRequest;
 use App\Http\Controllers\VerifyMobileNumber\VerifyMobileNumber;
-use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
+use App\Http\Requests\VerifyRequest;
 use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ResetPasswordRequest;
@@ -21,7 +21,7 @@ class UserController extends BaseAuthController
         parent::__construct($service);
     }
 
-    public function registerUser(RegisterRequest $request)
+    public function registerUser(UserRegisterRequest $request)
     {
         return parent::register(ModelsEnum::User, $request);
     }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\VerifyMobileNumber;
 
 use App\Enums\ModelsEnum;
+use App\Http\Requests\NewVerifyCodeRequest;
+use App\Http\Requests\VerifyRequest;
 use App\Services\Sms\ServiceTwilioSms;
 
 class VerifyMobileNumber

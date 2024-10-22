@@ -13,7 +13,8 @@ class MarketplaceRegisterRequest extends FormRequest
             'mobile' => ['required', 'string', 'max:10', 'unique:marketplaces,mobile'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'national_id' => ['required', 'string', 'min:8', 'unique:marketplaces,national_id'],
-            'location' => ['required', 'string'],
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
         ];
     }
 
