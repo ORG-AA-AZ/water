@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Marketplace;
 
 use App\Enums\ModelsEnum;
 use App\Http\Controllers\BaseAuthController;
-use App\Http\Controllers\Services\LoginAndRegisterService;
 use App\Http\Controllers\Services\Location;
+use App\Http\Controllers\Services\LoginAndRegisterService;
 use App\Http\Controllers\Services\VerifyMobileNumber;
 use App\Http\Requests\ChangeLocationRequest;
 use App\Http\Requests\ForgetPasswordRequest;
