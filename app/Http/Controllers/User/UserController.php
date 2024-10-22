@@ -12,7 +12,9 @@ use App\Http\Requests\ChangeLocationRequest;
 use App\Http\Requests\VerifyRequest;
 use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\NewVerifyCodeRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\VerifyRequest;
 
 class UserController extends BaseAuthController
 {
