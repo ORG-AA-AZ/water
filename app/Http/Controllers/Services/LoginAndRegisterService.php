@@ -75,6 +75,8 @@ class LoginAndRegisterService
             'mobile' => $data['mobile'],
             'password' => Hash::make($data['password']),
             'mobile_verification_code' => $verification_code,
+            'latitude' => $data['latitude'],
+            'longitude' => $data['longitude'],
         ];
 
         // Add marketplace-specific fields

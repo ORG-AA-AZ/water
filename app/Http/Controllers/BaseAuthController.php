@@ -17,7 +17,7 @@ abstract class BaseAuthController extends Controller
     public function register(ModelsEnum $model, $request, array $modelSpecificFields = []): JsonResponse
     {
         $data = array_merge(
-            $request->only(['name', 'mobile', 'password']),
+            $request->only(['name', 'mobile', 'password', 'latitude', 'longitude']),
             $modelSpecificFields
         );
 

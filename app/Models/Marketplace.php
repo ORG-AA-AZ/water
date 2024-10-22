@@ -15,7 +15,8 @@ class Marketplace extends Model
         'mobile',
         'national_id',
         'password',
-        'location',
+        'latitude',
+        'longitude',
     ];
 
     public function products()

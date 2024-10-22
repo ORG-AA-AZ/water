@@ -21,6 +21,8 @@ class User extends Authenticatable
         'mobile',
         'password',
         'mobile_verification_code',
+        'latitude',
+        'longitude',
     ];
 
     /**
