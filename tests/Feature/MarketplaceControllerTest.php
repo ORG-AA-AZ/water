@@ -3,7 +3,8 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\Marketplace\MarketplaceController;
-use App\Http\Controllers\Marketplace\MarketplaceRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Models\Marketplace;
 use App\Resources\MarketplaceResource;
 use Database\Factories\MarketplaceFactory;
@@ -16,7 +17,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 
 #[CoversClass(MarketplaceController::class)]
-#[CoversClass(MarketplaceRequest::class)]
+#[CoversClass(LoginRequest::class)]
+#[CoversClass(ResetPasswordRequest::class)]
 #[CoversClass(MarketplaceResource::class)]
 
 class MarketplaceControllerTest extends TestCase
@@ -34,7 +36,8 @@ class MarketplaceControllerTest extends TestCase
             'mobile' => $mobile = (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
             'password' => $password = Str::random(),
             'password_confirmation' => $password,
-            'location' => $location = 'located in : ' . Str::random(5),
+            'latitude' => $latitude = $this->faker->latitude(),
+            'longitude' => $longitude = $this->faker->longitude(),
         ];
 
         $this->postJson('/api/auth/marketplace-register', $data)
@@ -48,7 +51,8 @@ class MarketplaceControllerTest extends TestCase
             'national_id' => $national_id,
             'name' => $name,
             'mobile' => $mobile,
-            'location' => $location,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
         ]);
 
         $marketplace = Marketplace::where('mobile', $mobile)->first();
@@ -66,8 +70,8 @@ class MarketplaceControllerTest extends TestCase
             'mobile' => (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
             'password' => Str::random(),
             'password_confirmation' => Str::random(),
-            'location' => 'located in : ' . Str::random(5),
-        ];
+            'latitude' => $this->faker->latitude(),
+            'longitude' => $this->faker->longitude(),        ];
 
         $this->postJson('/api/auth/marketplace-register', $data)
             ->assertStatus(422)
@@ -90,8 +94,8 @@ class MarketplaceControllerTest extends TestCase
             'mobile' => (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
             'password' => $password = Str::random(),
             'password_confirmation' => $password,
-            'location' => 'located in : ' . Str::random(5),
-        ];
+            'latitude' => $this->faker->latitude(),
+            'longitude' => $this->faker->longitude(),        ];
 
         $this->postJson('/api/auth/marketplace-register', $data)
             ->assertStatus(422)
@@ -114,8 +118,8 @@ class MarketplaceControllerTest extends TestCase
             'mobile' => (string) $marketplace->mobile,
             'password' => $password = Str::random(),
             'password_confirmation' => $password,
-            'location' => 'located in : ' . Str::random(5),
-        ];
+            'latitude' => $this->faker->latitude(),
+            'longitude' => $this->faker->longitude(),        ];
 
         $this->postJson('/api/auth/marketplace-register', $data)
             ->assertStatus(422)

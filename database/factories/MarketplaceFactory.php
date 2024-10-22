@@ -38,7 +38,8 @@ class MarketplaceFactory extends Factory
             'mobile_verification_code' => Str::random(6),
             'mobile_verified_at' => null,
             'password' => static::$password ??= Hash::make('password'),
-            'location' => 'located in : ' . Str::random(10),
+            'latitude' => fake()->latitude(),
+            'longitude' => fake()->longitude(),
         ];
     }
 
@@ -47,6 +48,14 @@ class MarketplaceFactory extends Factory
         return $this->state(fn () => [
             'mobile_verification_code' => null,
             'mobile_verified_at' => now(),
+        ]);
+    }
+
+    public function forLocation(float $latitude, float $longitude): static
+    {
+        return $this->state(fn () => [
+            'latitude' => $latitude,
+            'longitude' => $longitude,
         ]);
     }
 }

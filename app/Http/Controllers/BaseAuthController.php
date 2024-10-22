@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ModelsEnum;
-use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
+use App\Http\Controllers\Services\LoginAndRegisterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,11 +14,11 @@ abstract class BaseAuthController extends Controller
     ) {
     }
 
-    public function register(ModelsEnum $model, $request, array $modelSpecificFields = []): JsonResponse
+    public function register(ModelsEnum $model, $request, array $model_specific_fields = []): JsonResponse
     {
         $data = array_merge(
-            $request->only(['name', 'mobile', 'password']),
-            $modelSpecificFields
+            $request->only(['name', 'mobile', 'password', 'latitude', 'longitude']),
+            $model_specific_fields
         );
 
         try {
@@ -71,6 +71,25 @@ abstract class BaseAuthController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Password reset successful',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 401);
+        }
+    }
+
+    public function forgetPassword(ModelsEnum $model, $request): JsonResponse
+    {
+        $data = $request->input('mobile');
+
+        try {
+            $this->service->resetPassword($model, $data);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login using new password that sent to mobile.',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

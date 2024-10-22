@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Marketplace;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class MarketplaceRequest extends FormRequest
+class MarketplaceRegisterRequest extends FormRequest
 {
     public function rules(): array
     {
@@ -13,7 +13,8 @@ class MarketplaceRequest extends FormRequest
             'mobile' => ['required', 'string', 'max:10', 'unique:marketplaces,mobile'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'national_id' => ['required', 'string', 'min:8', 'unique:marketplaces,national_id'],
-            'location' => ['required', 'string'],
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
         ];
     }
 

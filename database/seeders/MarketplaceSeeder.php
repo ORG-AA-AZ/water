@@ -21,7 +21,8 @@ class MarketplaceSeeder extends Seeder
             'mobile_verified_at' => now(),
             'password' => Hash::make('password123'),
             'remember_token' => Str::random(10),
-            'location' => 'located in : ' . Str::random(10),
+            'latitude' => 29.533224,
+            'longitude' => 35.006957,
         ]);
     }
 }

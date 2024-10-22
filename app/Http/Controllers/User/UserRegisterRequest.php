@@ -4,7 +4,7 @@ namespace App\Http\Controllers\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class UserRegisterRequest extends FormRequest
 {
     public function rules(): array
     {
@@ -12,6 +12,8 @@ class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'mobile' => ['required', 'string', 'max:10', 'unique:users,mobile'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
         ];
     }
 

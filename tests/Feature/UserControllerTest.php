@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\LoginAndRegisterService\LoginAndRegisterService;
-use App\Http\Controllers\User\LoginRequest;
-use App\Http\Controllers\User\RegisterRequest;
+use App\Http\Controllers\Services\LoginAndRegisterService;
 use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\VerifyMobileNumber\NewVerifyCodeRequest;
-use App\Http\Controllers\VerifyMobileNumber\VerifyRequest;
+use App\Http\Controllers\User\UserRegisterRequest;
+use App\Http\Requests\ForgetPasswordRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\NewVerifyCodeRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\VerifyRequest;
 use App\Models\User;
 use App\Resources\UserResource;
 use Database\Factories\UserFactory;
@@ -21,7 +23,9 @@ use Tests\TestCase;
 
 #[CoversClass(UserController::class)]
 #[CoversClass(LoginRequest::class)]
-#[CoversClass(RegisterRequest::class)]
+#[CoversClass(ForgetPasswordRequest::class)]
+#[CoversClass(ResetPasswordRequest::class)]
+#[CoversClass(UserRegisterRequest::class)]
 #[CoversClass(UserResource::class)]
 #[CoversClass(VerifyRequest::class)]
 #[CoversClass(NewVerifyCodeRequest::class)]
@@ -40,6 +44,8 @@ class UserControllerTest extends TestCase
             'mobile' => $mobile = (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
             'password' => $password = Str::random(),
             'password_confirmation' => $password,
+            'latitude' => $latitude = $this->faker->latitude(),
+            'longitude' => $longitude = $this->faker->longitude(),
         ];
 
         $this->postJson('/api/auth/user-register', $data)
@@ -52,6 +58,8 @@ class UserControllerTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name' => $name,
             'mobile' => $mobile,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
         ]);
 
         $user = User::where('mobile', $mobile)->first();
@@ -71,6 +79,8 @@ class UserControllerTest extends TestCase
             'mobile' => $user->mobile,
             'password' => $password = Str::random(),
             'password_confirmation' => $password,
+            'latitude' => $this->faker->latitude(),
+            'longitude' => $this->faker->longitude(),
         ];
 
         $this->postJson('/api/auth/user-register', $data)
@@ -92,6 +102,8 @@ class UserControllerTest extends TestCase
             'mobile' => (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
             'password' => Str::random(),
             'password_confirmation' => Str::random(),
+            'latitude' => $this->faker->latitude(),
+            'longitude' => $this->faker->longitude(),
         ];
 
         $this->postJson('/api/auth/user-register', $data)
@@ -100,6 +112,32 @@ class UserControllerTest extends TestCase
                 'message' => 'The password confirmation does not match.',
                 'errors' => [
                     'password' => ['The password confirmation does not match.'],
+                ],
+            ]);
+    }
+
+    public function testFailRegisterUserIfOneOfLatitudeOrLongitude(): void
+    {
+        $this->faker = Factory::create();
+
+        $data = [
+            'name' => $this->faker->name(),
+            'mobile' => (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
+            'password' => $password = Str::random(),
+            'password_confirmation' => $password,
+        ];
+
+        $this->postJson('/api/auth/user-register', $data)
+            ->assertStatus(422)
+            ->assertJson([
+                'message' => 'The latitude field is required. (and 1 more error)',
+                'errors' => [
+                    'latitude' => [
+                        'The latitude field is required.',
+                    ],
+                    'longitude' => [
+                        'The longitude field is required.',
+                    ],
                 ],
             ]);
     }
@@ -113,6 +151,8 @@ class UserControllerTest extends TestCase
             'mobile' => (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
             'password' => $password = Str::random(),
             'password_confirmation' => $password,
+            'latitude' => $this->faker->latitude(),
+            'longitude' => $this->faker->longitude(),
         ];
 
         $mocked_service = $this->createMock(LoginAndRegisterService::class);
@@ -137,6 +177,28 @@ class UserControllerTest extends TestCase
         $data = [
             'mobile' => $user->mobile,
             'password' => 'password',
+        ];
+
+        $this->postJson('/api/auth/user-login', $data)
+            ->assertOk()
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'mobile',
+                    'token',
+                ],
+            ]);
+    }
+
+    public function testLoginUserWithResetPassword(): void
+    {
+        $user = UserFactory::new()->verified()->setResetPassword()->createOne();
+
+        $data = [
+            'mobile' => $user->mobile,
+            'password' => 'reset_password',
         ];
 
         $this->postJson('/api/auth/user-login', $data)
@@ -201,6 +263,23 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 'status' => 'success',
                 'message' => 'Mobile number verified successfully',
+            ]);
+    }
+
+    public function testResendVerifyCodeToMobileNumber(): void
+    {
+        $user = UserFactory::new()->createOne();
+
+        $data = [
+            'mobile' => $user->mobile,
+        ];
+
+        $this->postJson('/api/auth/user-resend-verify-code', $data)
+            ->assertOk()
+            ->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'New verification code sent successfully.',
             ]);
     }
 
