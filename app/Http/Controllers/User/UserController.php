@@ -4,14 +4,16 @@ namespace App\Http\Controllers\User;
 
 use App\Enums\ModelsEnum;
 use App\Http\Controllers\BaseAuthController;
-use App\Http\Controllers\Services\LoginAndRegisterService;
 use App\Http\Controllers\Services\Location;
+use App\Http\Controllers\Services\LoginAndRegisterService;
 use App\Http\Controllers\Services\VerifyMobileNumber;
 use App\Http\Requests\ChangeLocationRequest;
 use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\NewVerifyCodeRequest;
+use App\Http\Requests\NewVerifyCodeRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\VerifyRequest;
 use App\Http\Requests\VerifyRequest;
 
 class UserController extends BaseAuthController
