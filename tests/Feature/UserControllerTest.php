@@ -3,13 +3,13 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\Services\LoginAndRegisterService;
-use App\Http\Controllers\User\UserRegisterRequest;
 use App\Http\Controllers\User\UserController;
-use App\Http\Requests\NewVerifyCodeRequest;
-use App\Http\Requests\VerifyRequest;
+use App\Http\Controllers\User\UserRegisterRequest;
 use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\NewVerifyCodeRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\VerifyRequest;
 use App\Models\User;
 use App\Resources\UserResource;
 use Database\Factories\UserFactory;
@@ -132,12 +132,12 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 'message' => 'The latitude field is required. (and 1 more error)',
                 'errors' => [
-                    "latitude" => [
-                        "The latitude field is required."
+                    'latitude' => [
+                        'The latitude field is required.',
                     ],
-                    "longitude" => [
-                        "The longitude field is required."
-                    ]
+                    'longitude' => [
+                        'The longitude field is required.',
+                    ],
                 ],
             ]);
     }
