@@ -14,11 +14,11 @@ abstract class BaseAuthController extends Controller
     ) {
     }
 
-    public function register(ModelsEnum $model, $request, array $modelSpecificFields = []): JsonResponse
+    public function register(ModelsEnum $model, $request, array $model_specific_fields = []): JsonResponse
     {
         $data = array_merge(
             $request->only(['name', 'mobile', 'password', 'latitude', 'longitude']),
-            $modelSpecificFields
+            $model_specific_fields
         );
 
         try {

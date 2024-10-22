@@ -28,8 +28,6 @@ class MarketplaceController extends BaseAuthController
     {
         $data = [
             'national_id' => $request->input('national_id'),
-            'latitude' => $request->input('latitude'),
-            'longitude' => $request->input('longitude'),
         ];
 
         return parent::register(ModelsEnum::Marketplace, $request, $data);

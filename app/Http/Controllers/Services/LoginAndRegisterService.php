@@ -80,9 +80,8 @@ class LoginAndRegisterService
         ];
 
         // Add marketplace-specific fields
-        if (isset($data['national_id']) && isset($data['location'])) {
+        if (isset($data['national_id'])) {
             $retrieved_data['national_id'] = $data['national_id'];
-            $retrieved_data['location'] = $data['location'];
         }
 
         return $retrieved_data;
