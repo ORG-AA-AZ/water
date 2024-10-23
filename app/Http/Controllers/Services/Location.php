@@ -11,11 +11,10 @@ class Location
     {
         $entity = $model->value::where('mobile', $request->input('mobile'))->first();
 
-        if(! $entity)
-        {
+        if (! $entity) {
             throw new \Exception('Mobile is not registered');
         }
 
-        $entity->update(['latitude' => $request->latitude , 'longitude' => $request->longitude]);
+        $entity->update(['latitude' => $request->latitude, 'longitude' => $request->longitude]);
     }
 }

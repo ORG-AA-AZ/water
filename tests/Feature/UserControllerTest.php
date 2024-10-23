@@ -236,7 +236,7 @@ class UserControllerTest extends TestCase
 
         $this->postJson('/api/auth/user-login', $data)
             ->assertStatus(401)
-            ->assertJson(["error" => "Invalid login"]);
+            ->assertJson(['error' => 'Invalid login']);
     }
 
     public function testVerifyMobileNumber(): void
@@ -334,7 +334,7 @@ class UserControllerTest extends TestCase
         $this->postJson('/api/auth/user-forget-password', $data)
             ->assertOk()
             ->assertJson([
-                'message' => 'Login using new password that sent to mobile.'
+                'message' => 'Login using new password that sent to mobile.',
             ]);
 
         $user = User::where('mobile', $user->mobile)->first();
@@ -351,7 +351,7 @@ class UserControllerTest extends TestCase
         $this->postJson('/api/auth/user-forget-password', $data)
             ->assertStatus(401)
             ->assertJson([
-                "error" => "An error occurred during the process. Please try again later."
+                'error' => 'An error occurred during the process. Please try again later.',
             ]);
     }
 
@@ -370,7 +370,7 @@ class UserControllerTest extends TestCase
             ->postJson('/api/auth/user-change-location', $data)
             ->assertOk()
             ->assertJson([
-                'message' => 'Location updated successfully'
+                'message' => 'Location updated successfully',
             ]);
 
         $user = User::where('mobile', $user->mobile)->first();

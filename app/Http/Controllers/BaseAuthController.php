@@ -32,6 +32,7 @@ abstract class BaseAuthController extends Controller
             ], 201);
         } catch (\Exception $e) {
             Log::error($e);
+
             return response()->json(['error' => 'An error occurred during the process. Please try again later.'], 401);
         }
     }
@@ -55,6 +56,7 @@ abstract class BaseAuthController extends Controller
             ], 200);
         } catch (\Exception $e) {
             Log::error($e);
+
             return response()->json(['error' => 'Invalid login'], 401);
         }
     }
@@ -72,6 +74,7 @@ abstract class BaseAuthController extends Controller
             ], 200);
         } catch (\Exception $e) {
             Log::error($e);
+
             return response()->json(['error' => 'Error in reset password'], 401);
         }
     }
@@ -87,6 +90,7 @@ abstract class BaseAuthController extends Controller
             ], 200);
         } catch (\Exception $e) {
             Log::error($e);
+
             return response()->json(['error' => 'An error occurred during the process. Please try again later.'], 401);
         }
     }

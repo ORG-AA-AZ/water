@@ -65,12 +65,13 @@ class UserController extends BaseAuthController
     {
         try {
             $this->location->changeLocation(ModelsEnum::User, $request);
+
             return response()->json([
-                'message' => 'Location updated successfully'
+                'message' => 'Location updated successfully',
             ]);
-        } catch(Exception $e)
-        {
+        } catch (Exception $e) {
             Log::error($e);
+
             return response()->json(['message' => 'Error in update the location'], 403);
         }
     }
