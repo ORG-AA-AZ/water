@@ -1,6 +1,8 @@
--   Forget password for marketplace
+-   Move the project to WSL and docker
 
--   Complete the testing for user
+-   Install horizin ( need pcntl )
+
+-   Search for package to read the logs
 
 -   Work on testing for marketplace
 
