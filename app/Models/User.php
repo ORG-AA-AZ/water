@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'mobile',
         'password',
+        'reset_password',
         'mobile_verification_code',
         'latitude',
         'longitude',
@@ -47,7 +48,6 @@ class User extends Authenticatable
         return [
             'mobile_verified_at' => 'datetime',
             'password' => 'hashed',
-            'reset_password' => 'hashed',
         ];
     }
 }

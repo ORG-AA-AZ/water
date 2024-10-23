@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\ModelsEnum;
 use App\Http\Controllers\Services\LoginAndRegisterService;
+use App\Http\Requests\ForgetPasswordRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 abstract class BaseAuthController extends Controller
 {
@@ -29,10 +31,8 @@ abstract class BaseAuthController extends Controller
                 'message' => 'Account registered successfully. Verify your mobile number',
             ], 201);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 401);
+            Log::error($e);
+            return response()->json(['error' => 'An error occurred during the process. Please try again later.'], 401);
         }
     }
 
@@ -54,10 +54,8 @@ abstract class BaseAuthController extends Controller
                 ],
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 401);
+            Log::error($e);
+            return response()->json(['error' => 'Invalid login'], 401);
         }
     }
 
@@ -73,29 +71,23 @@ abstract class BaseAuthController extends Controller
                 'message' => 'Password reset successful',
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 401);
+            Log::error($e);
+            return response()->json(['error' => 'Error in reset password'], 401);
         }
     }
 
-    public function forgetPassword(ModelsEnum $model, $request): JsonResponse
+    public function forgetPassword(ModelsEnum $model, ForgetPasswordRequest $request): JsonResponse
     {
-        $data = $request->input('mobile');
-
         try {
-            $this->service->resetPassword($model, $data);
+            $this->service->forgetPassword($model, $request);
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Login using new password that sent to mobile.',
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 401);
+            Log::error($e);
+            return response()->json(['error' => 'An error occurred during the process. Please try again later.'], 401);
         }
     }
 

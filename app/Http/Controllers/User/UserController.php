@@ -13,6 +13,8 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\NewVerifyCodeRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\VerifyRequest;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends BaseAuthController
 {
@@ -59,8 +61,17 @@ class UserController extends BaseAuthController
         return $this->verify_mobile_number->setNewVerificationCode(ModelsEnum::User, $request);
     }
 
-    public function changeLocation(ChangeLocationRequest $request): void
+    public function changeLocation(ChangeLocationRequest $request)
     {
-        $this->location->changeLocation(ModelsEnum::User, $request);
+        try {
+            $this->location->changeLocation(ModelsEnum::User, $request);
+            return response()->json([
+                'message' => 'Location updated successfully'
+            ]);
+        } catch(Exception $e)
+        {
+            Log::error($e);
+            return response()->json(['message' => 'Error in update the location'], 403);
+        }
     }
 }

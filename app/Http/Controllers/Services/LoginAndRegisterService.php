@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Services;
 
 use App\Enums\ModelsEnum;
+use App\Http\Requests\ForgetPasswordRequest;
 use App\Services\Sms\ServiceTwilioSms;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -53,9 +54,9 @@ class LoginAndRegisterService
         $model->value::where('mobile', $data['mobile'])->first()->update(['password' => $data['password']]);
     }
 
-    public function forgetPassword(ModelsEnum $model, array $data)
+    public function forgetPassword(ModelsEnum $model, ForgetPasswordRequest $request)
     {
-        $entity = $model->value::where('mobile', $data['mobile'])->first();
+        $entity = $model->value::where('mobile', $request->input('mobile'))->first();
 
         if (! $entity) {
             throw new \Exception('Your mobile number is not registered');

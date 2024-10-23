@@ -158,16 +158,13 @@ class UserControllerTest extends TestCase
         $mocked_service = $this->createMock(LoginAndRegisterService::class);
         $mocked_service->expects($this->once())
             ->method('register')
-            ->willThrowException(new \Exception('Registration error'));
+            ->willThrowException(new \Exception('An error occurred during the process. Please try again later.'));
 
         $this->app->instance(LoginAndRegisterService::class, $mocked_service);
 
         $this->postJson('/api/auth/user-register', $data)
             ->assertStatus(401)
-            ->assertJson([
-                'status' => 'error',
-                'message' => 'Registration error',
-            ]);
+            ->assertJson(['error' => 'An error occurred during the process. Please try again later.']);
     }
 
     public function testLoginUser(): void
@@ -225,10 +222,7 @@ class UserControllerTest extends TestCase
 
         $this->postJson('/api/auth/user-login', $data)
             ->assertStatus(401)
-            ->assertJson([
-                'status' => 'error',
-                'message' => 'Invalid login credentials',
-            ]);
+            ->assertJson(['error' => 'Invalid login']);
     }
 
     public function testInvalidLoginUserIfMobileNotVerified(): void
@@ -242,10 +236,7 @@ class UserControllerTest extends TestCase
 
         $this->postJson('/api/auth/user-login', $data)
             ->assertStatus(401)
-            ->assertJson([
-                'status' => 'error',
-                'message' => 'Your mobile number is not verified',
-            ]);
+            ->assertJson(["error" => "Invalid login"]);
     }
 
     public function testVerifyMobileNumber(): void
@@ -305,5 +296,86 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 'message' => 'Unauthenticated.',
             ]);
+    }
+
+    public function testRestUserPassword(): void
+    {
+        $user = UserFactory::new()->verified()->createOne();
+
+        $data = [
+            'mobile' => $user->mobile,
+            'password' => $password = Str::random(),
+            'password_confirmation' => $password,
+        ];
+
+        $this->actingAs($user)
+            ->postJson('/api/auth/user-reset-password', $data)
+            ->assertOk()
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'Password reset successful',
+            ]);
+
+        $this->assertFalse(Hash::check($password, $user->password));
+        $user = User::where('mobile', $user->mobile)->first();
+
+        $this->assertTrue(Hash::check($password, $user->password));
+    }
+
+    public function testForgetUserPassword(): void
+    {
+        $user = UserFactory::new()->createOne();
+
+        $data = [
+            'mobile' => $user->mobile,
+        ];
+        $this->assertNull($user->reset_password);
+
+        $this->postJson('/api/auth/user-forget-password', $data)
+            ->assertOk()
+            ->assertJson([
+                'message' => 'Login using new password that sent to mobile.'
+            ]);
+
+        $user = User::where('mobile', $user->mobile)->first();
+
+        $this->assertNotNull($user->reset_password);
+    }
+
+    public function testFailForgetUserPasswordIfMobileNotRegistered(): void
+    {
+        $data = [
+            'mobile' => '0797193116',
+        ];
+
+        $this->postJson('/api/auth/user-forget-password', $data)
+            ->assertStatus(401)
+            ->assertJson([
+                "error" => "An error occurred during the process. Please try again later."
+            ]);
+    }
+
+    public function testUpdateUserLocation(): void
+    {
+        $this->faker = Factory::create();
+        $user = UserFactory::new()->verified()->createOne();
+
+        $data = [
+            'mobile' => $user->mobile,
+            'latitude' => $latitude = $this->faker->latitude(),
+            'longitude' => $longitude = $this->faker->longitude(),
+        ];
+
+        $this->actingAs($user)
+            ->postJson('/api/auth/user-change-location', $data)
+            ->assertOk()
+            ->assertJson([
+                'message' => 'Location updated successfully'
+            ]);
+
+        $user = User::where('mobile', $user->mobile)->first();
+
+        $this->assertEquals($latitude, $user->latitude);
+        $this->assertEquals($longitude, $user->longitude);
     }
 }
