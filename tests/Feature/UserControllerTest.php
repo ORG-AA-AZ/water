@@ -39,14 +39,14 @@ class UserControllerTest extends TestCase
     {
         $this->faker = Factory::create();
 
-        $data = [
-            'name' => $name = $this->faker->name(),
-            'mobile' => $mobile = (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
-            'password' => $password = Str::random(),
-            'password_confirmation' => $password,
-            'latitude' => $latitude = $this->faker->latitude(),
-            'longitude' => $longitude = $this->faker->longitude(),
-        ];
+        // $data = [
+        //     'name' => $name = $this->faker->name(),
+        //     'mobile' => $mobile = (string) $this->faker->unique()->numberBetween(1000000000, 9999999999),
+        //     'password' => $password = Str::random(),
+        //     'password_confirmation' => $password,
+        //     'latitude' => $latitude = $this->faker->latitude(),
+        //     'longitude' => $longitude = $this->faker->longitude(),
+        // ];
 
         $this->postJson('/api/auth/user-register', $data)
             ->assertStatus(201)
